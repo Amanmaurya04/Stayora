@@ -2,7 +2,13 @@
 
 **Stayora** is a full-stack accommodation and experiences booking platform inspired by Airbnb. It allows users to discover and book stays, explore local experiences, manage reservations, and host their own properties and experiences.
 
-The project is built using the MERN stack with secure authentication, image uploads, and Razorpay payment integration.
+Built using the **MERN stack**, Stayora includes JWT-based authentication, Cloudinary image uploads, and Razorpay payment integration.
+
+## 🌐 Live Demo
+
+- **Live Website:** [https://stayora-frontend-w40n.onrender.com](https://stayora-frontend-w40n.onrender.com)
+- **Backend API:** [https://stayora-mznj.onrender.com](https://stayora-mznj.onrender.com)
+- **GitHub Repository:** [https://github.com/Amanmaurya04/Stayora](https://github.com/Amanmaurya04/Stayora)
 
 ## ✨ Features
 
@@ -27,7 +33,7 @@ The project is built using the MERN stack with secure authentication, image uplo
 
 ### 💳 Payment Integration
 - Razorpay payment gateway integration.
-- Secure payment verification.
+- Payment verification.
 - Booking payment status management.
 
 ### 🔐 Authentication & User Management
@@ -44,29 +50,30 @@ The project is built using the MERN stack with secure authentication, image uplo
 
 ## 🛠️ Tech Stack
 
-**Frontend**
+### Frontend
 - React.js
 - React Router
 - Bootstrap
 - CSS
 - JavaScript
+- Vite
 
-**Backend**
+### Backend
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
 - JSON Web Tokens (JWT)
 
-**Services & Integrations**
-- Cloudinary – Image storage and management
-- Razorpay – Payment integration
+### Services & Integrations
+- **Cloudinary** – Image storage and management
+- **Razorpay** – Payment gateway integration
 
-**Development Tools**
+### Development Tools
 - Git & GitHub
 - VS Code
-- Vite
 - Postman
+- npm
 
 ## 📂 Project Structure
 
@@ -121,7 +128,7 @@ npm install
 
 ### 3. Install backend dependencies
 
-Open another terminal:
+Open another terminal from the project root:
 
 ```bash
 cd server
@@ -130,13 +137,11 @@ npm install
 
 ### 4. Configure environment variables
 
-Create a `.env` file inside the `server` directory.
-
-Add the required configuration:
+Create a `.env` file inside the `server` directory and add:
 
 ```env
 PORT=8000
-MONGO_URI=your_mongodb_connection_string
+Mongo_URL=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 
 CLOUDINARY_CLOUD_NAME=your_cloudinary_name
@@ -145,45 +150,63 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+
+CLIENT_URL=http://localhost:5173
 ```
 
-Make sure to use your actual environment variable names from your backend configuration.
+Create another `.env` file inside the `client` directory:
+
+```env
+VITE_API_URL=http://localhost:8000
+```
+
+**Important:** Replace the placeholder values with your own credentials. Never commit actual API keys, passwords, or secret values to GitHub.
 
 ### 5. Run the backend
 
+From the `server` directory:
+
 ```bash
-cd server
 npm run dev
 ```
 
-### 6. Run the frontend
-
-In another terminal:
-
-```bash
-cd client
-npm run dev
-```
-
-The application should now be available at:
-
-```text
-http://localhost:5173
-```
-
-The backend runs on:
+The backend will run at:
 
 ```text
 http://localhost:8000
 ```
 
-## 🚀 Future Improvements
+### 6. Run the frontend
 
-- Responsive UI improvements.
+Open another terminal and navigate to the `client` directory:
+
+```bash
+npm run dev
+```
+
+The frontend will run at:
+
+```text
+http://localhost:5173
+```
+
+## 🚀 Deployment
+
+Stayora is deployed using **Render**.
+
+- Frontend: Render Static Site
+- Backend: Render Web Service
+- Database: MongoDB Atlas
+- Image Storage: Cloudinary
+- Payments: Razorpay
+
+## 🔮 Future Improvements
+
 - Advanced search and filtering.
 - Wishlist functionality.
 - Enhanced booking and hosting dashboard.
-- Deployment and production optimization.
+- Improved notifications and booking updates.
+- Additional performance and security optimizations.
 
 ## 👨‍💻 Author
 
@@ -193,4 +216,4 @@ http://localhost:8000
 
 ---
 
-⭐ If you find this project interesting, consider giving it a star!
+⭐ If you find this project interesting, consider giving the repository a star!
