@@ -30,15 +30,13 @@ if(existingUsername){
 
 const hashedPassword = await bcrypt.hash(password,10);
 
-
-
 const newUser = new User ({
     username,
     email,
     password:hashedPassword,
     contact
-    
-   
+
+
 });
 
 await newUser.save();
@@ -71,7 +69,7 @@ const login = async ( req , res ) => {
     try {
 
         const {email , password } =req.body;
-        
+
         if(!email || !password){
             return res.status(400).json({
                 message:"Please provide email and password"
@@ -131,4 +129,3 @@ res.status(200).json({
 };
 
 module.exports = { signup , login };
-

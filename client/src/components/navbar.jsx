@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext"
@@ -30,18 +29,6 @@ export default function Navbar({ onSearch = () => { } }) {
 
   useEffect(() => {
 
-    // const handleDown = (e) => {
-
-    //   if (
-    //     barRef.current &&
-    //     !barRef.current.contains(e.target)
-    //   ) {
-    //     setActive(null);
-    //   }
-
-    // };
-
-
 const handleDown = (e) => {
         const clickedInsideSearch =
             barRef.current?.contains(e.target);
@@ -53,9 +40,6 @@ const handleDown = (e) => {
             setActive(null);
         }
     };
-
-
-
 
     const handleKey = (e) => {
 
@@ -84,17 +68,12 @@ const handleDown = (e) => {
 
   }, []);
 
-
-
   const handleSearch = () => {
 
     const query = {
       page: 1,
       limit: 30,
     };
-
-
-
 
     if (city.trim()) {
       query.city = city.trim();
@@ -104,19 +83,13 @@ const handleDown = (e) => {
       query.minPrice = Number(minPrice);
     }
 
-
-
     if (maxPrice) {
       query.maxPrice = Number(maxPrice);
     }
 
-
-
     if (isListingPage && guests > 0) {
       query.maxGuest = guests;
     }
-
-
 
     if (isExperiencePage && spotsLeft > 0) {
       query.spotsLeft = spotsLeft;
@@ -127,13 +100,6 @@ const handleDown = (e) => {
     onSearch(query);
   };
 
-
-
-  // const handleLogout = () => {
-  //   logout();
-  //   navigate("/login");
-  // };
-
   const handleLogout = () => {
     console.log("LOGOUT BUTTON CLICKED");
 
@@ -143,8 +109,6 @@ const handleDown = (e) => {
 
     navigate("/login");
   };
-
-
 
   const clearAll = () => {
 
@@ -163,8 +127,6 @@ const handleDown = (e) => {
     });
   };
 
-
-
   const priceLabel =
     minPrice || maxPrice
       ? `₹${minPrice || "0"} – ₹${maxPrice || "any"}`
@@ -179,8 +141,6 @@ const handleDown = (e) => {
     spotsLeft > 0
       ? `${spotsLeft} spot${spotsLeft > 1 ? "s" : ""}`
       : "Add spots";
-
-
 
   const peopleActive =
     isListingPage
@@ -199,7 +159,7 @@ const handleDown = (e) => {
           <div className="row align-items-center">
 
 
-            <div className="col-lg-3 col-md-2 col-4">
+            <div className="col-lg-3 col-md-2 col-6">
 
               <div className="logo-wrapper">
 
@@ -215,7 +175,7 @@ const handleDown = (e) => {
             </div>
 
 
-            <div className="col-lg-6 col-md-8 col-8">
+            <div className="col-lg-6 col-md-8 col-12 order-3 order-md-2">
 
 
               <div className="nav-category-row">
@@ -255,14 +215,10 @@ const handleDown = (e) => {
 
               </div>
 
-
-
               <div
                 ref={barRef}
                 className="search-bar"
               >
-
-
 
                 <div
                   className={`search-section where-section ${active === "city"
@@ -427,9 +383,6 @@ const handleDown = (e) => {
                     }`}
                 />
 
-
-
-
                 <div
                   className={`search-section people-section ${peopleActive
                     ? "search-section-active"
@@ -477,9 +430,6 @@ const handleDown = (e) => {
 
                     </button>
 
-
-                    {/* SEARCH BUTTON */}
-
                     <button
                       type="button"
                       className="navbar-search-btn"
@@ -490,9 +440,6 @@ const handleDown = (e) => {
                     </button>
 
                   </div>
-
-
-
 
                   {isListingPage &&
                     active === "guests" && (
@@ -568,9 +515,6 @@ const handleDown = (e) => {
                       </div>
 
                     )}
-
-
-
 
                   {isExperiencePage &&
                     active === "spots" && (
@@ -655,15 +599,9 @@ const handleDown = (e) => {
 
             </div>
 
-
-
-
-            <div className="col-lg-3 col-md-2 d-none d-md-block">
+            <div className="col-lg-3 col-md-2 col-6 order-2 order-md-3">
 
               <div className="right-navbar">
-
-                {/* HOST LINK */}
-
 
 {isListingPage && (  <Link
                   to="/host-home"
@@ -672,18 +610,12 @@ const handleDown = (e) => {
                   Stayora your home
                 </Link>   ) }
 
-
-               
 {isExperiencePage && (  <Link
                   to="/host-experience"
                   className="host-link"
                 >
                   Host an Experience
                 </Link>   ) }
-
-
-                {/* MENU + PROFILE */}
-
 
 <div
     ref={menuRef}
@@ -700,9 +632,6 @@ const handleDown = (e) => {
 
                   </button>
 
-
-
-
                   <button className="right-butns" onClick={() => setActive(active === "profile" ? null : "profile")} >
 
                     <i className="fa-solid fa-user"></i>
@@ -713,7 +642,7 @@ const handleDown = (e) => {
 
                 {active === "menu" && (
                   <div className="menu-dropdown">
-                  
+
 
                     <button
                       type="button"
@@ -731,8 +660,6 @@ const handleDown = (e) => {
 
                 )} 
 
-
-
 {active === "profile" && (
   <div className="profile-dropdown">
     <button className="profile-btn p-1" onClick={() => navigate("/user")}>Profile</button>
@@ -741,8 +668,6 @@ const handleDown = (e) => {
 
 
                 </div>
-                
-
 
               </div>
 
@@ -757,11 +682,6 @@ const handleDown = (e) => {
     </header>
   );
 }
-
-
-/* =====================================================
-   PRICE FIELD
-===================================================== */
 
 function PriceField({
   label,
@@ -799,11 +719,6 @@ function PriceField({
   );
 }
 
-
-/* =====================================================
-   SEARCH ICON
-===================================================== */
-
 const SearchIcon = () => (
 
   <svg
@@ -830,5 +745,3 @@ const SearchIcon = () => (
   </svg>
 
 );
-
-

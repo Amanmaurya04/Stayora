@@ -14,7 +14,6 @@ const createExperienceBooking = async (req, res) => {
     try {
         const { experienceId, slotId, participants } = req.body;
 
-        // 1. Validate input
         if (!experienceId || !slotId || participants === undefined) {
             return res.status(400).json({
                 message: "Please provide experience id, slot id and participants",
@@ -46,7 +45,6 @@ const createExperienceBooking = async (req, res) => {
 
         let createdBooking;
 
-        // 2. Start transaction
         await session.withTransaction(async () => {
             const experience = await Experience.findById(experienceId)
                 .session(session);
@@ -57,7 +55,6 @@ const createExperienceBooking = async (req, res) => {
                 throw error;
             }
 
-            // 3. Find selected schedule slot
             const slot = experience.schedule.id(slotId);
 
             if (!slot) {
@@ -66,7 +63,6 @@ const createExperienceBooking = async (req, res) => {
                 throw error;
             }
 
-            // 4. Check available spots
             if (slot.spotsLeft < participantCount) {
                 const error = new Error(
                     `Only ${slot.spotsLeft} spots are available`
@@ -75,16 +71,13 @@ const createExperienceBooking = async (req, res) => {
                 throw error;
             }
 
-            // 5. Calculate total price
             const totalPrice =
                 experience.pricePerPerson * participantCount;
 
-            // 6. Reserve spots
             slot.spotsLeft -= participantCount;
 
             await experience.save({ session });
 
-            // 7. Create pending booking
             const [booking] = await ExperienceBooking.create(
                 [
                     {
@@ -115,14 +108,13 @@ const createExperienceBooking = async (req, res) => {
         return res.status(error.statusCode || 500).json({
             message: error.message || "Failed to create experience booking",
         });
-  
+
     } finally {
         await session.endSession();
     }
 };
 
 
-// GET LOGGED-IN USER'S EXPERIENCE BOOKINGS
 const getMyExperienceBookings = async (req, res) => {
     try {
         const bookings = await ExperienceBooking.find({
@@ -147,7 +139,6 @@ const getMyExperienceBookings = async (req, res) => {
 };
 
 
-// GET A SINGLE EXPERIENCE BOOKING
 const getSingleBooking = async (req, res) => {
     try {
         const { id } = req.params;
@@ -188,23 +179,18 @@ const getSingleBooking = async (req, res) => {
     }
 };
 
-
-// CANCEL AN EXPERIENCE BOOKING
-
 const cancelExperienceBooking = async (req, res) => {
     const session = await mongoose.startSession();
 
     try {
         const { id } = req.params;
 
-        // 1. Validate booking ID
         if (!mongoose.isValidObjectId(id)) {
             return res.status(400).json({
                 message: "Invalid booking ID",
             });
         }
 
-        // 2. Find booking
         const booking = await ExperienceBooking.findById(id);
 
         if (!booking) {
@@ -213,14 +199,12 @@ const cancelExperienceBooking = async (req, res) => {
             });
         }
 
-        // 3. Check booking owner
         if (booking.guest.toString() !== req.user.id.toString()) {
             return res.status(403).json({
                 message: "You can only cancel your own booking",
             });
         }
 
-        // 4. Check booking status
         if (booking.status === "cancelled") {
             return res.status(400).json({
                 message: "Booking is already cancelled",
@@ -233,15 +217,11 @@ const cancelExperienceBooking = async (req, res) => {
             });
         }
 
-        // ==========================================
-        // CASE 1: UNPAID BOOKING
-        // ==========================================
 
         if (booking.paymentStatus === "unpaid") {
 
             await session.withTransaction(async () => {
 
-                // Fetch latest booking inside transaction
                 const latestBooking = await ExperienceBooking.findOne({
                     _id: id,
                     guest: req.user.id,
@@ -255,7 +235,6 @@ const cancelExperienceBooking = async (req, res) => {
                     );
                 }
 
-                // Find experience
                 const experience = await Experience.findById(
                     latestBooking.experience
                 ).session(session);
@@ -264,7 +243,6 @@ const cancelExperienceBooking = async (req, res) => {
                     throw new Error("Experience not found");
                 }
 
-                // Find booked schedule slot
                 const slot = experience.schedule.id(
                     latestBooking.slotId
                 );
@@ -273,17 +251,14 @@ const cancelExperienceBooking = async (req, res) => {
                     throw new Error("Schedule slot not found");
                 }
 
-                // Restore reserved spots
                 slot.spotsLeft += latestBooking.participants;
 
-                // Prevent exceeding capacity
                 if (slot.spotsLeft > slot.totalSpots) {
                     throw new Error(
                         "Available spots exceed the slot capacity"
                     );
                 }
 
-                // Cancel booking
                 latestBooking.status = "cancelled";
 
                 await experience.save({ session });
@@ -295,20 +270,15 @@ const cancelExperienceBooking = async (req, res) => {
             });
         }
 
-        // ==========================================
-        // CASE 2: PAID BOOKING
-        // ==========================================
 
         if (booking.paymentStatus === "paid") {
 
-            // 5. Check Razorpay payment ID
             if (!booking.razorpayPaymentId) {
                 return res.status(400).json({
                     message: "Razorpay payment ID not found",
                 });
             }
 
-            // 6. Prevent duplicate refund requests
             if (
                 booking.refundStatus &&
                 booking.refundStatus !== "not_requested"
@@ -319,7 +289,6 @@ const cancelExperienceBooking = async (req, res) => {
                 });
             }
 
-            // 7. Calculate refund amount
             const refundAmount = Math.round(
                 Number(booking.totalPrice) * 100
             );
@@ -333,7 +302,6 @@ const cancelExperienceBooking = async (req, res) => {
                 });
             }
 
-            // 8. Reserve refund request atomically
             const reservedBooking =
                 await ExperienceBooking.findOneAndUpdate(
                     {
@@ -361,7 +329,6 @@ const cancelExperienceBooking = async (req, res) => {
                 });
             }
 
-            // 9. Request refund from Razorpay
             let refund;
 
             try {
@@ -378,9 +345,6 @@ const cancelExperienceBooking = async (req, res) => {
                     refundError
                 );
 
-                // Keep refundStatus as processing.
-                // A network error does not prove that Razorpay
-                // rejected the refund request.
 
                 return res.status(502).json({
                     message: "Refund request could not be confirmed. Please check Razorpay before retrying.",
@@ -388,7 +352,6 @@ const cancelExperienceBooking = async (req, res) => {
                 });
             }
 
-            // 10. Handle an immediately failed refund
             if (refund.status === "failed") {
 
                 await ExperienceBooking.updateOne(
@@ -410,9 +373,6 @@ const cancelExperienceBooking = async (req, res) => {
                 });
             }
 
-            // ==========================================
-            // 11. CANCEL BOOKING AND RESTORE SPOTS
-            // ==========================================
 
             await session.withTransaction(async () => {
 
@@ -423,7 +383,6 @@ const cancelExperienceBooking = async (req, res) => {
                     throw new Error("Experience booking not found");
                 }
 
-                // Avoid restoring spots more than once
                 if (latestBooking.status === "cancelled") {
                     return;
                 }
@@ -440,7 +399,6 @@ const cancelExperienceBooking = async (req, res) => {
                     );
                 }
 
-                // Find experience
                 const experience = await Experience.findById(
                     latestBooking.experience
                 ).session(session);
@@ -449,7 +407,6 @@ const cancelExperienceBooking = async (req, res) => {
                     throw new Error("Experience not found");
                 }
 
-                // Find schedule slot
                 const slot = experience.schedule.id(
                     latestBooking.slotId
                 );
@@ -458,7 +415,6 @@ const cancelExperienceBooking = async (req, res) => {
                     throw new Error("Schedule slot not found");
                 }
 
-                // Restore reserved spots
                 slot.spotsLeft += latestBooking.participants;
 
                 if (slot.spotsLeft > slot.totalSpots) {
@@ -467,13 +423,10 @@ const cancelExperienceBooking = async (req, res) => {
                     );
                 }
 
-                // Cancel booking
                 latestBooking.status = "cancelled";
 
                 latestBooking.razorpayRefundId = refund.id;
 
-                // Preserve a processed status if the webhook
-                // arrived before this transaction.
                 if (refund.status === "processed") {
                     latestBooking.refundStatus = "processed";
                     latestBooking.paymentStatus = "refunded";
@@ -487,7 +440,6 @@ const cancelExperienceBooking = async (req, res) => {
                 await latestBooking.save({ session });
             });
 
-            // 12. Return latest booking
             const updatedBooking =
                 await ExperienceBooking.findById(id);
 
@@ -521,8 +473,6 @@ const cancelExperienceBooking = async (req, res) => {
         await session.endSession();
     }
 };
-
-
 
 module.exports = {
     createExperienceBooking,

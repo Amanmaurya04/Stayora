@@ -3,9 +3,6 @@ const cloudinary = require("../config/cloudinary");
 const Experience = require("../models/experienceModel");
 const ExperienceBooking = require("../models/experienceBookingModel");
 
-
-
-
 const uploadToCloudinary = (file) =>
   new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -230,9 +227,6 @@ const editExperience = async (req, res) => {
     try {
         const experience = req.experience;
 
-        // ========================================= 
-        // 1. HELPER FOR JSON PARSING
-        // =========================================
 
         const parseField = (value, fallback) => {
             if (value === undefined) return fallback;
@@ -244,9 +238,6 @@ const editExperience = async (req, res) => {
             return value;
         };
 
-        // =========================================
-        // 2. GET EXISTING IMAGES
-        // =========================================
 
         let existingImages = parseField(
             req.body.existingImages,
@@ -257,7 +248,6 @@ const editExperience = async (req, res) => {
             existingImages = [existingImages];
         }
 
-        // Check whether submitted images belong to this experience
 
         const validImages = existingImages.every((image) =>
             experience.images.includes(image)
@@ -278,9 +268,6 @@ const editExperience = async (req, res) => {
             });
         }
 
-        // =========================================
-        // 3. GET EXPERIENCE DETAILS
-        // =========================================
 
         const {
             title,
@@ -289,9 +276,6 @@ const editExperience = async (req, res) => {
             pricePerPerson,
         } = req.body;
 
-        // =========================================
-        // 4. PARSE LOCATION AND SCHEDULE
-        // =========================================
 
         const location = parseField(
             req.body.location,
@@ -318,9 +302,6 @@ const editExperience = async (req, res) => {
             });
         }
 
-        // =========================================
-        // 5. VALIDATE AND MAP EXISTING SLOTS
-        // ========================================= 
 
         const oldSlots = experience.schedule;
 
@@ -333,18 +314,12 @@ const editExperience = async (req, res) => {
 
         const oldSlotIds = oldSlots.map((slot) => slot._id);
 
-        // =========================================
-        // 6. GET ALL BOOKINGS
-        // =========================================
 
         const existingBookings = await ExperienceBooking.find({
             experience: experience._id,
             slotId: { $in: oldSlotIds },
         }).select("slotId participants status paymentStatus");
 
-        // =========================================
-        // 7. CREATE BOOKING MAP
-        // =========================================
 
         const bookingMap = new Map();
 
@@ -359,7 +334,6 @@ const editExperience = async (req, res) => {
                 });
             }
 
-            // Cancelled or refunded bookings don't consume capacity
 
             if (
                 booking.status !== "cancelled" &&
@@ -371,34 +345,24 @@ const editExperience = async (req, res) => {
             }
         }
 
-        // =========================================
-        // 8. GET SUBMITTED EXISTING SLOT IDS
-        // =========================================
 
         const submittedSlotIds = schedule
             .filter((slot) => slot._id)
             .map((slot) => slot._id.toString());
 
-        // Prevent duplicate IDs in submitted schedule
- 
+
         if (new Set(submittedSlotIds).size !== submittedSlotIds.length) {
             return res.status(400).json({
                 message: "Duplicate schedule slot IDs are not allowed",
             });
         }
 
-        // =========================================
-        // 9. FIND SLOTS TO DELETE
-        // =========================================
 
         const slotsToDelete = oldSlots.filter(
             (oldSlot) =>
                 !submittedSlotIds.includes(oldSlot._id.toString())
         );
 
-        // =========================================
-        // 10. PREVENT DELETING BOOKED SLOTS
-        // =========================================
 
         for (const slot of slotsToDelete) {
 
@@ -413,9 +377,6 @@ const editExperience = async (req, res) => {
             }
         }
 
-        // =========================================
-        // 11. PREVENT DELETING PAST SLOTS
-        // =========================================
 
         const startOfToday = new Date();
 
@@ -430,13 +391,9 @@ const editExperience = async (req, res) => {
             }
         }
 
-        // =========================================
-        // 12. FORMAT AND VALIDATE SCHEDULE
-        // =========================================
 
         const formattedSchedule = schedule.map((slot) => {
 
-            // Validate basic slot information
 
             const date = new Date(slot.date);
             const durationMinutes = Number(slot.durationMinutes);
@@ -455,9 +412,6 @@ const editExperience = async (req, res) => {
                 throw new Error("Invalid schedule slot information");
             }
 
-            // -------------------------------------
-            // CASE 1: NEW SLOT
-            // -------------------------------------
 
             if (!slot._id) {
                 return {
@@ -469,9 +423,6 @@ const editExperience = async (req, res) => {
                 };
             }
 
-            // -------------------------------------
-            // CASE 2: EXISTING SLOT
-            // -------------------------------------
 
             const slotId = slot._id.toString();
 
@@ -483,9 +434,6 @@ const editExperience = async (req, res) => {
 
             const bookingInfo = bookingMap.get(slotId);
 
-            // -------------------------------------
-            // CASE 3: EXISTING SLOT WITH BOOKINGS
-            // -------------------------------------  
 
             if (bookingInfo?.hasBooking) {
 
@@ -501,13 +449,11 @@ const editExperience = async (req, res) => {
                 return {
                     _id: existingSlot._id,
 
-                    // Preserve existing booked slot details
 
                     date: existingSlot.date,
                     startTime: existingSlot.startTime,
                     durationMinutes: existingSlot.durationMinutes,
 
-                    // Allow capacity changes
 
                     totalSpots,
 
@@ -515,9 +461,6 @@ const editExperience = async (req, res) => {
                 };
             }
 
-            // -------------------------------------
-            // CASE 4: EXISTING SLOT WITHOUT BOOKINGS
-            // -------------------------------------
 
             return {
                 _id: existingSlot._id,
@@ -529,9 +472,6 @@ const editExperience = async (req, res) => {
             };
         });
 
-        // =========================================
-        // 13. UPLOAD NEW IMAGES TO CLOUDINARY
-        // =========================================
 
         const newImageUrls = [];
 
@@ -562,18 +502,12 @@ const editExperience = async (req, res) => {
             }
         }
 
-        // =========================================
-        // 14. PREPARE FINAL IMAGES
-        // =========================================
 
         const finalImages = [
             ...existingImages,
             ...newImageUrls,
         ];
 
-        // =========================================
-        // 15. UPDATE EXPERIENCE DETAILS
-        // =========================================
 
         if (title !== undefined) {
             experience.title = title;
@@ -600,9 +534,6 @@ const editExperience = async (req, res) => {
             experience.pricePerPerson = price;
         }
 
-        // =========================================
-        // 16. UPDATE LOCATION
-        // =========================================
 
         if (location !== null) {
 
@@ -612,25 +543,16 @@ const editExperience = async (req, res) => {
             };
         }
 
-        // =========================================
-        // 17. UPDATE SCHEDULE AND IMAGES
-        // =========================================
 
         experience.schedule = formattedSchedule;
 
         experience.images = finalImages;
 
-        // =========================================
-        // 18. SAVE EXPERIENCE
-        // =========================================
 
         await experience.save();
 
         databaseSaved = true;
 
-        // =========================================
-        // 19. SUCCESS RESPONSE
-        // =========================================
 
         return res.status(200).json({
             message: "Experience updated successfully",
@@ -641,10 +563,6 @@ const editExperience = async (req, res) => {
 
         console.log("Error updating experience:", error);
 
-        // =========================================
-        // 20. CLEANUP NEW CLOUDINARY UPLOADS
-        // IF DATABASE SAVE FAILED
-        // =========================================
 
         if (!databaseSaved && uploadedPublicIds.length > 0) {
 
@@ -660,9 +578,6 @@ const editExperience = async (req, res) => {
         });
     }
 };
-
-
-
 
 module.exports = {
   createExperience,

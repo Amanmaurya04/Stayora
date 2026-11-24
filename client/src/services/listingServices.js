@@ -1,23 +1,5 @@
 import api from "./api";
 
-// export const getAllListings = (query = {}) => {
-//     const params = new URLSearchParams();
-
-//     Object.entries(query).forEach(([key, value]) => {
-//         if (value !== "" && value !== null && value !== undefined) {
-//             params.append(key, value);
-//         }
-//     });
-
-//     const queryString = params.toString();
-
-//     return api.get(
-//         queryString ? `/listings?${queryString}` : "/listings"
-//     );
-// };
-
-
-
 export const getAllListings = (query = {}) => {
     const params = new URLSearchParams();
 
@@ -40,18 +22,6 @@ export const getAllListings = (query = {}) => {
     );
 };
 
-
-// export const getSingleListing = async (id) => {
-//     try {
-//         const response = await api.get(`/listings/${id}`);
-//         return response.data;
-//     } catch (error) {
-//         console.error("Error fetching data:", error);
-//         throw error;
-//     }
-// };
-
-
 export const createListing = async (formData) => {
     try {
         const response = await api.post("/listings", formData);
@@ -63,9 +33,6 @@ export const createListing = async (formData) => {
     }
 };
 
-
-
-
 export const getListingById = (listingId) => {
     return api.get(`/listings/${listingId}`);
 };
@@ -74,56 +41,3 @@ export const getListingById = (listingId) => {
 export const editListing = (listingId, listingData) => {
     return api.put(`/listings/${listingId}`, listingData);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

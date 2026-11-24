@@ -1,22 +1,3 @@
-// import api from "./api";
-
-
-// export const getListingReviews = (id) =>{
-//     return api.post(`/reviews/listing/${id}`)
-// };
-
-
-// export const createReview = (reviewData) =>{
-//     return api.post("/reviews" , reviewData);
-// }
-
-
-
-
-
-
-
-
 import api from "./api";
 
 export const getListingReviews = (listingId) => {

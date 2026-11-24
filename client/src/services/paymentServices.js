@@ -1,4 +1,3 @@
-
 import api from "./api";
 
 export const createPaymentOrder = (bookingId) => {
@@ -35,38 +34,3 @@ export const verifyPayment = (paymentData) => {
         razorpay_signature,
     });
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import api from "./api";
-
-// export const createPaymentOrder = (bookingId) => {
-//     return api.post("/payments/create-order", {
-//         bookingId,
-//     });
-// };
-
-// export const verifyPayment = (paymentData) => {
-//     return api.post(
-//         "/payments/verify-payment",
-//         paymentData
-//     );
-// };

@@ -4,9 +4,6 @@ import { useAuth } from '../context/authContext';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-// import { MdAddPhotoAlternate } from "react-icons/md";  
-
-
 import { getListingById, editListing } from '../services/listingServices';
 
 import "../css/createListing.css"
@@ -72,8 +69,6 @@ function EditListing() {
         "No additional guests"
     ];
 
-
-
     const { listingId } = useParams();
     const navigate = useNavigate();
 
@@ -121,17 +116,8 @@ function EditListing() {
 
                 const selected = response.data;
 
-
-
-
-
-                // const hostId = selected.host?._id;
                 const hostId = selected.host?._id || selected.host?.id || selected.host;
                 const currentUserId = user?.id || user?._id;
-                // if(hostId !== user._id){
-                //     navigate(`/listings/${listingId}`);
-                //     return;
-                // }
                 if (String(hostId) !== String(currentUserId)) {
                     navigate(`/listings/${listingId}`);
                     return;
@@ -181,8 +167,6 @@ function EditListing() {
 
     }, [listingId, user, loading, navigate]);
 
-
-
     const handleImageChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
 
@@ -201,10 +185,6 @@ function EditListing() {
         e.target.value = "";
 
     };
-
-
-
-
 
     const removeExistingImage = (indexToRemove) => {
         setExistingImages((prevImages) =>
@@ -259,8 +239,6 @@ function EditListing() {
         }));
     };
 
-
-
     const handleAmenityChange = (amenity) => {
         setForm((prevForm) => {
             const alreadySelected = prevForm.amenities.includes(amenity);
@@ -288,8 +266,6 @@ function EditListing() {
             };
         });
     };
-
-
 
     const handleSubmit = async (e) =>{
         e.preventDefault();
@@ -334,8 +310,6 @@ formData.append("bedrooms", form.bedrooms);
         formData.append("images", image);
     });
 
-
-
     await editListing(listingId, formData);
 
  alert("Listing updated successfully!");
@@ -355,9 +329,6 @@ finally{
 
 
     }
-
-
-
 
     return (
         <div className='container'>
@@ -423,8 +394,6 @@ finally{
                             ))}
                         </div>
                     </div>
-
-
 
                     <div>
                         <h4 className='mt-5 fw-medium'>What will guests have access to</h4>
@@ -697,9 +666,6 @@ finally{
 
                     </div>
 
-
-
-
                 </div>
             </div>
 
@@ -716,7 +682,7 @@ onClick={handleSubmit}
 
     </div>
 </div>
- 
+
 
         </div>
 

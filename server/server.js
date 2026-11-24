@@ -4,7 +4,6 @@ require("dotenv").config();
 
 const connectDb = require("./config/db");
 
-//routes 
 const authRoutes = require("./routes/authRoutes");
 const listingRoutes = require("./routes/listingRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
@@ -30,9 +29,6 @@ app.use(
 
 app.use(express.json());
 
-
-
-//routes
 app.use("/api/payments", paymentRoutes);
 app.use("/api/experience-payments", experiencePaymentRoutes);
 app.use("/api/auth" , authRoutes);
@@ -43,8 +39,6 @@ app.use("/api/user" ,userRoutes);
 app.use("/api/experiences" , experienceRoutes);
 app.use("/api/experience-bookings", experienceBookingRoutes);
 app.use("/api/reviews/experience", experienceReviewRoutes);
-// app.use("/api/experience-reviews", experienceReviewRoutes);
-// app.use("/api/payments" , paymentRoutes);
 
 app.get("/test", (req, res) => {
     res.json({

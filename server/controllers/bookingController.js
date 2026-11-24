@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 const Booking = require("../models/bookingModel");
 const Listing = require("../models/listingModel");
@@ -9,8 +8,6 @@ const razorpay = new Razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// Accept date-only values from HTML date inputs.
-// This prevents server-local timezone differences.
 const parseDateOnly = (value) => {
     if (
         typeof value !== "string" ||
@@ -105,7 +102,7 @@ const createBooking = async (req, res) => {
             });
         }
 
-        
+
         const existingBooking = await Booking.findOne({
             listing: listingId,
             status: { $in: ["Pending", "Confirmed"] },
@@ -122,7 +119,6 @@ const createBooking = async (req, res) => {
         const millisecondsPerDay = 24 * 60 * 60 * 1000;
         const nights = (endDate - startDate) / millisecondsPerDay;
 
-        // The backend is the authority for the price.
         const pricePerNight = Number(listing.pricePerNight);
 
         if (
@@ -189,14 +185,12 @@ const cancelBooking = async (req, res) => {
     try {
         const { bookingId } = req.params;
 
-        // 1. Validate booking ID
         if (!mongoose.isValidObjectId(bookingId)) {
             return res.status(400).json({
                 message: "Invalid booking ID",
             });
         }
 
-        // 2. Find booking
         const booking = await Booking.findById(bookingId);
 
         if (!booking) {
@@ -205,24 +199,20 @@ const cancelBooking = async (req, res) => {
             });
         }
 
-        // 3. Check booking owner
         if (booking.user.toString() !== req.user.id.toString()) {
             return res.status(403).json({
                 message: "You can only cancel your own booking",
             });
         }
 
-        // 4. Check whether already cancelled
         if (booking.status === "Cancelled") {
             return res.status(400).json({
                 message: "Booking is already cancelled",
             });
         }
 
-        // 5. Handle unpaid booking
         if (booking.paymentStatus === "Pending") {
 
-            // Atomic update prevents a payment race condition
             const cancelledBooking = await Booking.findOneAndUpdate(
                 {
                     _id: bookingId,
@@ -253,7 +243,6 @@ const cancelBooking = async (req, res) => {
             });
         }
 
-        // 6. Handle paid booking and refund
         if (booking.paymentStatus === "Paid") {
 
             if (!booking.razorpayPaymentId) {
@@ -262,7 +251,6 @@ const cancelBooking = async (req, res) => {
                 });
             }
 
-            // Check whether a refund has already been requested
             if (
                 booking.refundStatus &&
                 booking.refundStatus !== "not_requested"
@@ -286,8 +274,6 @@ const cancelBooking = async (req, res) => {
                 });
             }
 
-            // 7. Reserve refund request atomically
-            // This prevents duplicate refund requests from repeated clicks
 
             const reservedBooking = await Booking.findOneAndUpdate(
                 {
@@ -316,7 +302,6 @@ const cancelBooking = async (req, res) => {
                 });
             }
 
-            // 8. Request refund from Razorpay
             let refund;
 
             try {
@@ -332,9 +317,6 @@ const cancelBooking = async (req, res) => {
                     refundError
                 );
 
-                // Keep processing because a network error may occur
-                // even after Razorpay has accepted the refund.
-                // Do not automatically retry and risk duplicate refunds.
 
                 return res.status(502).json({
                     message: "Refund request could not be confirmed. Please check the Razorpay dashboard before retrying.",
@@ -343,7 +325,6 @@ const cancelBooking = async (req, res) => {
                 });
             }
 
-            // 9. Determine actual Razorpay refund status
             let refundStatus = "processing";
 
             if (refund.status === "processed") {
@@ -352,18 +333,15 @@ const cancelBooking = async (req, res) => {
                 refundStatus = "failed";
             }
 
-            // 10. Save refund details
             const updateFields = {
                 razorpayRefundId: refund.id,
                 refundStatus,
             };
 
-            // Only mark payment refunded when Razorpay confirms completion
             if (refundStatus === "processed") {
                 updateFields.paymentStatus = "Refunded";
             }
 
-            // Do not overwrite a refund webhook that arrived first
             await Booking.updateOne(
                 {
                     _id: bookingId,
@@ -489,33 +467,3 @@ module.exports = {
     getHostBookings,
     getSingleBooking,
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

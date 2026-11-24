@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
-   
+
     useEffect(() => {
         try {
             const storedUser = localStorage.getItem("user");
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
                     localStorage.removeItem("token");
                 }
             } else {
-              
+
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
             }
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-   
+
     const login = async (credentials) => {
         const data = await loginUser(credentials);
 
@@ -59,23 +59,23 @@ export const AuthProvider = ({ children }) => {
             throw new Error("Invalid login response from server");
         }
 
-        
+
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-      
+
         setToken(data.token);
         setUser(data.user);
 
         return data;
     };
 
-   
+
     const signup = async (formData) => {
         return await signupUser(formData);
     };
 
-    
+
     const logout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");

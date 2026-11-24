@@ -26,8 +26,6 @@ console.log("Ownership middleware:");
 console.log("Listing host:", listing.host.toString());
 console.log("Logged-in user:", req.user.id);
 
-
-
     if (listing.host.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "You don't own this listing",
@@ -45,7 +43,5 @@ console.log("Logged-in user:", req.user.id);
     });
   }
 };
-
-
 
 module.exports = ownershipMiddleware;

@@ -18,12 +18,6 @@ import {
 
 import "../css/viewListing.css";
 
-// =========================
-// HELPERS
-// =========================
-
-
-
 const formatPrice = (price) =>
     Number(price || 0).toLocaleString("en-IN");
 
@@ -45,7 +39,6 @@ const getNight = (checkIn, checkOut) => {
     const startDate = new Date(`${checkIn}T00:00:00`);
     const endDate = new Date(`${checkOut}T00:00:00`);
 
-    // Math.round avoids off-by-one results around daylight-saving changes
     return Math.max(
         0,
         Math.round((endDate - startDate) / (1000 * 60 * 60 * 24))
@@ -75,7 +68,6 @@ const isValidRatings = (ratings) =>
         (rating) => rating < 1 || rating > 5
     );
 
-// Star inputs shared by the "Write a review" and "Edit review" forms
 const RatingInputs = ({ values, onChange }) =>
     RATING_CATEGORIES.map(({ key, label }) => (
         <div className="rating-row" key={key}>
@@ -110,14 +102,6 @@ const ViewListing = () => {
 
     const currentUserId = user?.id || user?._id;
 
-
-
-    // =========================
-    // STATES
-    // =========================
-
-
-
     const hostId = listing?.host?._id || listing?.host?.id || listing?.host;
 
     const isOwner = Boolean(currentUserId) && Boolean(hostId) && String(currentUserId) === String(hostId)
@@ -126,7 +110,6 @@ const ViewListing = () => {
     const [reviews, setReviews] = useState([]);
     const [reviewsLoading, setReviewsLoading] = useState(true);
 
-    // CREATE REVIEW
 
     const [ratings, setRatings] = useState(EMPTY_RATINGS);
     const [reviewComment, setReviewComment] = useState("");
@@ -134,7 +117,6 @@ const ViewListing = () => {
     const [reviewError, setReviewError] = useState("");
     const [reviewMessage, setReviewMessage] = useState("");
 
-    // EDIT REVIEW
 
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [editRatings, setEditRatings] = useState(EMPTY_RATINGS);
@@ -142,7 +124,6 @@ const ViewListing = () => {
     const [editLoading, setEditLoading] = useState(false);
     const [editError, setEditError] = useState("");
 
-    // LISTING
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -150,7 +131,6 @@ const ViewListing = () => {
     const [selectedImage, setSelectedImage] = useState(0);
     const [showAllPhotos, setShowAllPhotos] = useState(false);
 
-    // BOOKING
 
     const [checkIn, setCheckIn] = useState("");
     const [checkOut, setCheckOut] = useState("");
@@ -163,9 +143,6 @@ const ViewListing = () => {
     const [bookingError, setBookingError] = useState("");
     const [bookingMessage, setBookingMessage] = useState("");
 
-    // =========================
-    // FETCH LISTING
-    // =========================
 
     const fetchListings = async (id) => {
         try {
@@ -189,8 +166,6 @@ const ViewListing = () => {
         }
     };
 
-    // Silent refresh (no full-page spinner). Used after a review changes
-    // so the average rating and review count in the heading stay correct.
     const refreshListing = async (id) => {
         try {
             const { data } = await getListingById(id);
@@ -200,9 +175,6 @@ const ViewListing = () => {
         }
     };
 
-    // =========================
-    // FETCH REVIEWS
-    // =========================
 
     const fetchReviews = async (id) => {
         try {
@@ -227,9 +199,6 @@ const ViewListing = () => {
         }
     };
 
-    // Silent refresh of the review list + listing rating summary.
-    // Kept separate from the submit/save request so a refresh failure
-    // is never reported as "Failed to submit review".
     const refreshAfterReviewChange = async (id) => {
         try {
             const { data } = await getListingReviews(id);
@@ -246,9 +215,6 @@ const ViewListing = () => {
         await refreshListing(id);
     };
 
-    // =========================
-    // CREATE REVIEW
-    // =========================
 
     const handleRatingChange = (category, value) => {
         setRatings((previous) => ({
@@ -302,9 +268,6 @@ const ViewListing = () => {
         }
     };
 
-    // =========================
-    // EDIT REVIEW
-    // =========================
 
     const handleEditClick = (review) => {
         setEditingReviewId(review._id);
@@ -378,9 +341,6 @@ const ViewListing = () => {
         setEditError("");
     };
 
-    // =========================
-    // BOOKING
-    // =========================
 
     const handleBooking = async () => {
         try {
@@ -388,7 +348,6 @@ const ViewListing = () => {
             setBookingError("");
             setBookingMessage("");
 
-            // 1. Validate the selected dates
 
             if (!checkIn || !checkOut) {
                 setBookingError(
@@ -402,7 +361,6 @@ const ViewListing = () => {
                 return;
             }
 
-            // 2. Check valid guest count
 
             if (
                 !Number.isInteger(Number(guest)) ||
@@ -415,8 +373,6 @@ const ViewListing = () => {
                 return;
             }
 
-            // 3. Make sure Razorpay is loaded BEFORE creating a booking,
-            //    otherwise a pending booking is created that can't be paid.
 
             if (!window.Razorpay) {
                 throw new Error(
@@ -424,7 +380,6 @@ const ViewListing = () => {
                 );
             }
 
-            // 4. Create booking
 
             const bookingResponse = await createBooking({
                 listingId,
@@ -439,13 +394,11 @@ const ViewListing = () => {
                 throw new Error("The booking ID was not returned.");
             }
 
-            // 5. Create Razorpay order
 
             const orderResponse = await createPaymentOrder(booking._id);
 
             const order = orderResponse.data;
 
-            // 6. Razorpay options
 
             const options = {
                 key: order.key,
@@ -457,7 +410,6 @@ const ViewListing = () => {
 
                 handler: async (response) => {
                     try {
-                        // 7. Verify payment
 
                         await verifyPayment({
                             bookingId: booking._id,
@@ -519,9 +471,6 @@ const ViewListing = () => {
         }
     };
 
-    // =========================
-    // LOAD DATA
-    // =========================
 
     useEffect(() => {
         if (!listingId) {
@@ -537,10 +486,6 @@ const ViewListing = () => {
         fetchReviews(listingId);
     }, [listingId]);
 
-    // =========================
-    // PHOTO MODAL: keyboard + scroll lock
-    // (must stay above the early returns below)
-    // =========================
 
     useEffect(() => {
         if (!showAllPhotos) return;
@@ -570,9 +515,6 @@ const ViewListing = () => {
         };
     }, [showAllPhotos, listing]);
 
-    // =========================
-    // BOOKING CALCULATIONS
-    // =========================
 
     const nights = getNight(checkIn, checkOut);
 
@@ -582,17 +524,11 @@ const ViewListing = () => {
 
     const totalPrice = subTotal;
 
-    // =========================
-    // IMAGES
-    // =========================
 
     const images = Array.isArray(listing?.images)
         ? listing.images.filter(Boolean)
         : [];
 
-    // =========================
-    // LOCATION
-    // =========================
 
     const location = listing?.location || {};
 
@@ -605,9 +541,6 @@ const ViewListing = () => {
         .filter(Boolean)
         .join(", ");
 
-    // =========================
-    // SHARE
-    // =========================
 
     const handleShare = async () => {
         const url = window.location.href;
@@ -634,9 +567,6 @@ const ViewListing = () => {
         }
     };
 
-    // =========================
-    // LOADING
-    // =========================
 
     if (loading) {
         return (
@@ -657,9 +587,6 @@ const ViewListing = () => {
         );
     }
 
-    // =========================
-    // ERROR
-    // =========================
 
     if (error || !listing) {
         return (
@@ -677,15 +604,11 @@ const ViewListing = () => {
         );
     }
 
-    // =========================
-    // MAIN UI
-    // =========================
 
     return (
         <div className="page">
             <main className="container">
 
-                {/* TOP BAR */}
 
                 <div className="top-bar">
                     <Link to="/listings" className="back-btn">
@@ -708,7 +631,7 @@ const ViewListing = () => {
                                 onClick={() =>
                                     navigate(`/listings/${listing._id}/edit`)
                                 }
-                            
+
                             >
                                 Edit
                             </button>
@@ -717,7 +640,6 @@ const ViewListing = () => {
                     </div>
                 </div>
 
-                {/* LISTING HEADING */}
 
                 <section className="l-heading">
                     <div>
@@ -754,12 +676,10 @@ const ViewListing = () => {
                     </div>
                 </section>
 
-                {/* IMAGE GALLERY */}
 
                 {images.length > 0 ? (
                     <section className="gallery">
 
-                        {/* MAIN IMAGE */}
 
                         <div className="gallery-main">
                             <button
@@ -781,7 +701,6 @@ const ViewListing = () => {
                             </button>
                         </div>
 
-                        {/* SIDE IMAGES */}
 
                         <div className="gallery-side">
                             {images.slice(1, 5).map((image, index) => (
@@ -800,7 +719,6 @@ const ViewListing = () => {
                                 </button>
                             ))}
 
-                            {/* VIEW ALL */}
 
                             {images.length > 1 && (
                                 <button
@@ -820,13 +738,11 @@ const ViewListing = () => {
                     <div className="no-image">No images available</div>
                 )}
 
-                {/* CONTENT GRID */}
 
                 <div className="content-grid">
 
                     <div className="main-column">
 
-                        {/* PROPERTY INFORMATION */}
 
                         <section className="l-section">
                             <div className="property-heading">
@@ -853,7 +769,6 @@ const ViewListing = () => {
                             </div>
                         </section>
 
-                        {/* ABOUT */}
 
                         <section className="l-section">
                             <h2>About this place</h2>
@@ -863,7 +778,6 @@ const ViewListing = () => {
                             </p>
                         </section>
 
-                        {/* AMENITIES */}
 
                         <section className="l-section">
                             <h2>What this place offers</h2>
@@ -888,7 +802,6 @@ const ViewListing = () => {
                             )}
                         </section>
 
-                        {/* LOCATION */}
 
                         <section className="l-section">
                             <h2>Where you'll be</h2>
@@ -911,7 +824,6 @@ const ViewListing = () => {
                             </div>
                         </section>
 
-                        {/* HOUSE RULES */}
 
                         <section className="l-section">
                             <h2>House rules</h2>
@@ -936,7 +848,6 @@ const ViewListing = () => {
                             )}
                         </section>
 
-                        {/* REVIEWS */}
 
                         <section className="l-section vl-reviews-section">
                             <div className="l-reviews-heading">
@@ -959,7 +870,6 @@ const ViewListing = () => {
 
                             {reviewsLoading ? (
 
-                                /* REVIEWS LOADING */
 
                                 <div className="reviews-loading">
                                     <div
@@ -972,7 +882,6 @@ const ViewListing = () => {
 
                             ) : reviews.length === 0 ? (
 
-                                /* NO REVIEWS */
 
                                 <div className="no-reviews">
                                     <h3>No reviews yet</h3>
@@ -981,13 +890,9 @@ const ViewListing = () => {
 
                             ) : (
 
-                                /* REVIEW LIST */
 
                                 <div className="review-grid">
                                     {reviews.map((review) => {
-                                        // Only the review's author sees "Edit".
-                                        // Both ids must exist, otherwise two
-                                        // undefined values would compare equal.
                                         const isOwner =
                                             Boolean(currentUserId) &&
                                             Boolean(review.guest?._id) &&
@@ -1001,7 +906,6 @@ const ViewListing = () => {
                                             >
                                                 {editingReviewId === review._id ? (
 
-                                                    /* EDIT MODE */
 
                                                     <form onSubmit={handleSaveEdit}>
                                                         <h3>Edit your review</h3>
@@ -1055,10 +959,8 @@ const ViewListing = () => {
 
                                                 ) : (
 
-                                                    /* NORMAL REVIEW */
 
                                                     <>
-                                                        {/* USER */}
 
                                                         <div className="vl-review-user">
                                                             <div className="vl-review-avatar">
@@ -1089,7 +991,6 @@ const ViewListing = () => {
                                                             </div>
                                                         </div>
 
-                                                        {/* SIX CATEGORY RATINGS */}
 
                                                         <div className="vl-review-ratings">
                                                             {RATING_CATEGORIES.map(
@@ -1109,7 +1010,6 @@ const ViewListing = () => {
                                                             )}
                                                         </div>
 
-                                                        {/* OVERALL RATING */}
 
                                                         <div className="vl-review-rating">
                                                             <span>
@@ -1133,13 +1033,11 @@ const ViewListing = () => {
                                                             </strong>
                                                         </div>
 
-                                                        {/* COMMENT */}
 
                                                         <p className="vl-review-comment">
                                                             {review.comment}
                                                         </p>
 
-                                                        {/* EDIT BUTTON */}
 
                                                         {isOwner && (
                                                             <button
@@ -1152,7 +1050,6 @@ const ViewListing = () => {
                                                             </button>
                                                         )}
 
-                                                        {/* HOST REPLY */}
 
                                                         {review.hostReply?.text && (
                                                             <div className="vl-host-reply">
@@ -1172,7 +1069,6 @@ const ViewListing = () => {
                             )}
                         </section>
 
-                        {/* CREATE REVIEW */}
 
                         <section className="create-review">
                             <h2>Write a Review</h2>
@@ -1224,7 +1120,6 @@ const ViewListing = () => {
 
                     </div>
 
-                    {/* BOOKING CARD */}
 
                     <aside className="booking-card">
 
@@ -1247,8 +1142,6 @@ const ViewListing = () => {
 
                                         setCheckIn(value);
 
-                                        // keep the range valid: clear check-out
-                                        // if it is now on/before the new check-in
                                         if (checkOut && value >= checkOut) {
                                             setCheckOut("");
                                         }
@@ -1355,7 +1248,6 @@ const ViewListing = () => {
 
                 </div>
 
-                {/* HOST */}
 
                 <section className="vl-section">
                     <h2>Meet your host</h2>
@@ -1378,7 +1270,6 @@ const ViewListing = () => {
                     </div>
                 </section>
 
-                {/* FULL SCREEN PHOTO MODAL */}
 
                 {showAllPhotos && images.length > 0 && (
                     <div

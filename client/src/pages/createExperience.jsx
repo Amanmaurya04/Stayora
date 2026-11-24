@@ -1,4 +1,3 @@
- 
 import React from 'react';
 import "../css/createExperience.css";
 import { createExperience } from "../services/experienceServices";
@@ -17,9 +16,6 @@ import {
 } from "react-icons/fa6";
 
 import { MdAddPhotoAlternate } from "react-icons/md";
-
-
-
 
 const categoryIcons = {
     food: <FaUtensils />,
@@ -228,7 +224,7 @@ function CreateExperience() {
         if (form.schedules.length === 0) {
             e.schedules = "Add at least one available slot";
         }
- 
+
         setErrors(e);
         return Object.keys(e).length === 0
 
@@ -279,13 +275,6 @@ const handleSubmit = async (e) => {
         );
     }
 };
-
-
-
-
-
-
-   
 
     return (
         <div className="container">

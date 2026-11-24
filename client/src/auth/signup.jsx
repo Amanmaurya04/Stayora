@@ -109,7 +109,7 @@ const Signup = () => {
             <input
               className="form-control"
               id="contact"
-              type="Number"
+              type="number"
               name="contact"
               placeholder="Mobile number"
               value={formData.contact}
@@ -117,8 +117,6 @@ const Signup = () => {
               required
             />
           </div>
-
-
 
           <div className="mb-4">
             <label htmlFor="password" className="form-label">
@@ -157,42 +155,11 @@ const Signup = () => {
           {message && <p className="text-success">{message}</p>}
         </form>
 
-
-
-
       </div>
 
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   )
-
-
 
 }
 

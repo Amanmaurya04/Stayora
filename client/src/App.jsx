@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/authContext";
 
@@ -7,7 +6,6 @@ import Layout from "./layout";
 
 import Experiences from "./pages/experiences";
 import Listings from "./pages/listings";
-// import ViewListing from "./pages/ViewListing";
 
 
 import ViewListing from "./pages/ViewListing";
@@ -37,10 +35,6 @@ function App() {
 
                         <Route path="/listings" element={<Listings />} />
 
-                        {/* <Route
-                            path="/listings/:id"
-                            element={<ViewListing />}
-                        /> */}
 
                         <Route path="/listings/:listingId" element={<ViewListing />} />
                         <Route path="/experiences/:experienceId" element={<ViewExperience />} />
@@ -50,6 +44,8 @@ function App() {
                             path="/experiences"
                             element={<Experiences />}
                         />
+
+                        <Route path="/user" element={<User />} />
 
                     </Route>
 
@@ -67,7 +63,6 @@ function App() {
                         path="/experiences/:experienceId/edit"
                         element={<EditExperience />}
                     />
-                    <Route path="/user" element={<User />} />
 
                 </Routes>
             </AuthProvider>
@@ -76,4 +71,3 @@ function App() {
 }
 
 export default App;
-

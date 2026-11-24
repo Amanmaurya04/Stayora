@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/authContext";
@@ -52,21 +51,16 @@ function EditExperience() {
 
     const { user, loading } = useAuth();
 
-    // Loading states
     const [saving, setSaving] = useState(false);
     const [experienceLoading, setExperienceLoading] = useState(true);
 
-    // Error message
     const [error, setError] = useState("");
 
-    // Image states
     const [existingImages, setExistingImages] = useState([]);
     const [newImages, setNewImages] = useState([]);
 
-    // Schedule editing state
     const [editingSlotId, setEditingSlotId] = useState(null);
 
-    // Main experience form
     const [form, setForm] = useState({
         title: "",
         description: "",
@@ -83,18 +77,12 @@ function EditExperience() {
         schedules: []
     });
 
-    // Individual schedule input state
     const [slot, setSlot] = useState({
         date: "",
         startTime: "",
         durationMinutes: "",
         totalSpots: ""
     });
-
-
-    // =====================================
-    // 1. HANDLE NORMAL INPUT CHANGES
-    // =====================================
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -104,11 +92,6 @@ function EditExperience() {
             [name]: value
         }));
     };
-
-
-    // =====================================
-    // 2. HANDLE LOCATION INPUT CHANGES
-    // =====================================
 
     const handleLocationChange = (e) => {
         const { name, value } = e.target;
@@ -122,22 +105,12 @@ function EditExperience() {
         }));
     };
 
-
-    // =====================================
-    // 3. SELECT CATEGORY
-    // =====================================
-
     const selectCategory = (category) => {
         setForm((prev) => ({
             ...prev,
             category
         }));
     };
-
-
-    // =====================================
-    // 4. FETCH EXPERIENCE DETAILS
-    // =====================================
 
     useEffect(() => {
 
@@ -160,16 +133,13 @@ function EditExperience() {
 
                 const selected = response.data.experience;
 
-                // Get host ID
                 const hostId =
                     selected.host?._id ||
                     selected.host?.id ||
                     selected.host;
 
-                // Get logged-in user ID
                 const currentUserId = user?._id || user?.id;
 
-                // Check whether logged-in user owns this experience
                 if (String(hostId) !== String(currentUserId)) {
 
                     navigate(`/experiences/${experienceId}`);
@@ -178,7 +148,6 @@ function EditExperience() {
 
                 if (cancelled) return;
 
-                // Fill the form with existing experience details
                 setForm({
                     title: selected.title || "",
                     description: selected.description || "",
@@ -194,14 +163,11 @@ function EditExperience() {
                         longitude: selected.location?.longitude ?? ""
                     },
 
-                    // Backend uses schedule (singular)
-                    // Frontend uses schedules (plural)
                     schedules: (selected.schedule || []).map((s) => ({
                         ...s
                     }))
                 });
 
-                // Store existing image URLs
                 setExistingImages(selected.images || []);
 
             } catch (err) {
@@ -231,11 +197,6 @@ function EditExperience() {
 
     }, [experienceId, loading, user, navigate]);
 
-
-    // =====================================
-    // 5. HANDLE SCHEDULE INPUT CHANGES
-    // =====================================
-
     const handleSlot = (e) => {
 
         const { name, value } = e.target;
@@ -246,14 +207,8 @@ function EditExperience() {
         }));
     };
 
-
-    // =====================================
-    // 6. ADD OR UPDATE SCHEDULE SLOT
-    // =====================================
-
     const addSlot = () => {
 
-        // Check empty fields
         if (
             !slot.date ||
             !slot.startTime ||
@@ -264,11 +219,9 @@ function EditExperience() {
             return;
         }
 
-        // Convert values into numbers
         const duration = Number(slot.durationMinutes);
         const totalSpots = Number(slot.totalSpots);
 
-        // Validate numbers
         if (
             !Number.isInteger(duration) ||
             !Number.isInteger(totalSpots) ||
@@ -279,16 +232,12 @@ function EditExperience() {
             return;
         }
 
-        // Create updated slot object
         const updatedSlot = {
             date: slot.date,
             startTime: slot.startTime,
             durationMinutes: duration,
             totalSpots
         };
-
-
-        // CASE 1: EDITING AN EXISTING OR NEW SLOT
 
         if (editingSlotId !== null) {
 
@@ -313,9 +262,6 @@ function EditExperience() {
 
         }
 
-
-        // CASE 2: ADDING A NEW SLOT
-
         else {
 
             setForm((prev) => ({
@@ -327,7 +273,6 @@ function EditExperience() {
                     {
                         ...updatedSlot,
 
-                        // Temporary frontend ID
                         tempId: crypto.randomUUID()
                     }
                 ]
@@ -336,10 +281,8 @@ function EditExperience() {
         }
 
 
-        // Reset editing mode
         setEditingSlotId(null);
 
-        // Clear inputs
         setSlot({
             date: "",
             startTime: "",
@@ -349,18 +292,10 @@ function EditExperience() {
 
     };
 
-
-    // =====================================
-    // 7. EDIT SCHEDULE SLOT
-    // =====================================
-
     const editSlot = (s) => {
 
-        // Existing slot has _id
-        // New slot has tempId
         setEditingSlotId(s._id || s.tempId);
 
-        // Put selected slot details into inputs
         setSlot({
             date: s.date?.split("T")[0] || "",
             startTime: s.startTime || "",
@@ -369,11 +304,6 @@ function EditExperience() {
         });
 
     };
-
-
-    // =====================================
-    // 8. REMOVE SCHEDULE SLOT
-    // =====================================
 
     const removeSlot = (index) => {
 
@@ -387,8 +317,6 @@ function EditExperience() {
             )
         }));
 
-        // If the removed slot was being edited,
-        // clear the editing state
         if (
             (slotToRemove._id || slotToRemove.tempId) === editingSlotId
         ) {
@@ -405,11 +333,6 @@ function EditExperience() {
 
     };
 
-
-    // =====================================
-    // 9. HANDLE IMAGE UPLOAD
-    // =====================================
-
     const handleImageChange = (e) => {
 
         const selectedFiles = Array.from(e.target.files);
@@ -419,7 +342,6 @@ function EditExperience() {
             newImages.length +
             selectedFiles.length;
 
-        // Backend allows maximum 10 images
         if (totalImages > 10) {
 
             alert("You can upload a maximum of 10 images");
@@ -433,15 +355,9 @@ function EditExperience() {
             ...selectedFiles
         ]);
 
-        // Reset input so the same file can be selected again
         e.target.value = "";
 
     };
-
-
-    // =====================================
-    // 10. REMOVE EXISTING IMAGE
-    // =====================================
 
     const removeExistingImages = (indexToRemove) => {
 
@@ -451,11 +367,6 @@ function EditExperience() {
 
     };
 
-
-    // =====================================
-    // 11. REMOVE NEW IMAGE
-    // =====================================
-
     const removeNewImage = (indexToRemove) => {
 
         setNewImages((prev) =>
@@ -463,11 +374,6 @@ function EditExperience() {
         );
 
     };
-
-
-    // =====================================
-    // 12. SUBMIT UPDATED EXPERIENCE
-    // =====================================
 
     const handleSubmit = async (e) => {
 
@@ -478,7 +384,6 @@ function EditExperience() {
             setSaving(true);
             setError("");
 
-            // Basic validation
             if (!form.title.trim()) {
                 alert("Please enter experience title");
                 return;
@@ -510,11 +415,9 @@ function EditExperience() {
             }
 
 
-            // Create FormData
             const formData = new FormData();
 
 
-            // Append normal experience fields
             formData.append("title", form.title);
             formData.append("description", form.description);
             formData.append("category", form.category);
@@ -524,40 +427,34 @@ function EditExperience() {
             );
 
 
-            // Append location as JSON
             formData.append(
                 "location",
                 JSON.stringify(form.location)
             );
 
 
-            // Remove temporary IDs before sending to backend
             const scheduleToSubmit = form.schedules.map(
                 ({ tempId, ...schedule }) => schedule
             );
 
 
-            // Backend expects schedule (singular)
             formData.append(
                 "schedule",
                 JSON.stringify(scheduleToSubmit)
             );
 
 
-            // Send remaining existing image URLs
             formData.append(
                 "existingImages",
                 JSON.stringify(existingImages)
             );
 
 
-            // Append newly selected images
             newImages.forEach((image) => {
                 formData.append("images", image);
             });
 
 
-            // Call backend service
             const response = await editExperience(
                 experienceId,
                 formData
@@ -567,7 +464,6 @@ function EditExperience() {
 
             alert("Experience updated successfully!");
 
-            // Navigate to updated experience
             navigate(`/experiences/${experienceId}`);
 
         } catch (err) {
@@ -587,11 +483,6 @@ function EditExperience() {
 
     };
 
-
-    // =====================================
-    // 13. LOADING SCREEN
-    // =====================================
-
     if (loading || experienceLoading) {
 
         return (
@@ -600,11 +491,6 @@ function EditExperience() {
             </div>
         );
     }
-
-
-    // =====================================
-    // 14. MAIN UI
-    // =====================================
 
     return (
 
@@ -616,7 +502,6 @@ function EditExperience() {
 
                     <div className="col-6">
 
-                        {/* TITLE */}
 
                         <div>
                             <h1 className="mt-5 fw-bold">
@@ -629,9 +514,6 @@ function EditExperience() {
                             </div>
                         </div>
 
-
-                        {/* EXPERIENCE DETAILS */}
-
                         <div>
                             <h4 className="mt-5 fw-medium">
                                 Name and describe your experience
@@ -642,9 +524,6 @@ function EditExperience() {
                                 Say what makes it special.
                             </div>
                         </div>
-
-
-                        {/* TITLE INPUT */}
 
                         <div className="mt-5">
                             <div className="label mb-1">
@@ -660,9 +539,6 @@ function EditExperience() {
                             onChange={handleChange}
                             placeholder="Photography session in the Himalayas"
                         />
-
-
-                        {/* DESCRIPTION */}
 
                         <div className="mt-5">
 
@@ -682,9 +558,6 @@ function EditExperience() {
 
 
                         <hr className="mt-5" />
-
-
-                        {/* CATEGORY */}
 
                         <div>
 
@@ -728,9 +601,6 @@ function EditExperience() {
 
                         <hr className="mt-5" />
 
-
-                        {/* IMAGES */}
-
                         <div>
 
                             <h4 className="mt-5 fw-medium">
@@ -767,9 +637,6 @@ function EditExperience() {
                                 hidden
                                 onChange={handleImageChange}
                             />
-
-
-                            {/* IMAGE PREVIEWS */}
 
                             <div className="image-preview-container">
 
@@ -850,9 +717,6 @@ function EditExperience() {
 
                         <hr className="mt-5" />
 
-
-                        {/* PRICE */}
-
                         <div className="mt-5">
 
                             <h4 className="fw-medium">
@@ -892,9 +756,6 @@ function EditExperience() {
 
 
                         <hr className="mt-5" />
-
-
-                        {/* LOCATION */}
 
                         <h4 className="fw-medium">
                             Where's your Event?
@@ -994,11 +855,6 @@ function EditExperience() {
 
                     </div>
 
-
-                    {/* =====================================
-                        SCHEDULE SECTION
-                    ===================================== */}
-
                     <div className="mt-5">
 
                         <h4 className="fw-medium">
@@ -1010,9 +866,6 @@ function EditExperience() {
                         <div className="head mb-3">
                             Add one or more dates and times.
                         </div>
-
-
-                        {/* DATE */}
 
                         <div className="row g-3">
 
@@ -1028,9 +881,6 @@ function EditExperience() {
 
                             </div>
 
-
-                            {/* START TIME */}
-
                             <div className="col-6">
 
                                 <input
@@ -1042,9 +892,6 @@ function EditExperience() {
                                 />
 
                             </div>
-
-
-                            {/* DURATION */}
 
                             <div className="col-6">
 
@@ -1061,9 +908,6 @@ function EditExperience() {
 
                             </div>
 
-
-                            {/* TOTAL SPOTS */}
-
                             <div className="col-6">
 
                                 <input
@@ -1079,9 +923,6 @@ function EditExperience() {
 
                             </div>
 
-
-                            {/* ADD / UPDATE BUTTON */}
-
                             <div className="col-12">
 
                                 <button
@@ -1095,9 +936,6 @@ function EditExperience() {
                                         : "+ Add slot"}
 
                                 </button>
-
-
-                                {/* CANCEL EDITING */}
 
                                 {editingSlotId !== null && (
 
@@ -1125,11 +963,6 @@ function EditExperience() {
                             </div>
 
                         </div>
-
-
-                        {/* =====================================
-                            DISPLAY ALL SCHEDULE SLOTS
-                        ===================================== */}
 
                         <div className="mt-3 end-button">
 
@@ -1180,33 +1013,11 @@ function EditExperience() {
 
                 </div>
 
-
-                {/* ERROR MESSAGE */}
-
                 {error && (
                     <div className="alert alert-danger mt-4">
                         {error}
                     </div>
                 )}
-
-
-                {/* SAVE BUTTON */}
-
-                {/* <div className="d-flex justify-content-center mt-5 mb-5">
-
-                    <button
-                        type="submit"
-                        className="btn btn-dark btn-lg"
-                        disabled={saving}
-                    >
-
-                        {saving
-                            ? "Saving changes..."
-                            : "Save changes"}
-
-                    </button>
-
-                </div> */}
 
                  <div className="footer-container">
                     <div className="footer-inner">

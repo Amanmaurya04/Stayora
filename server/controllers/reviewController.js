@@ -1,6 +1,3 @@
-
-
-
 const Review = require("../models/reviewModel");
 const Booking = require("../models/bookingModel");
 const Listing = require("../models/listingModel");
@@ -11,14 +8,12 @@ const createReview = async (req, res) => {
         const { ratings, comment } = req.body;
         const { listingId } = req.params;
 
-        // 1. Validate the review data
         if (!ratings || !comment?.trim()) {
             return res.status(400).json({
                 message: "Please provide ratings and comment",
             });
         }
 
-        // 2. Find completed bookings for this guest and listing
         const bookings = await Booking.find({
             user: req.user.id,
             listing: listingId,
@@ -33,7 +28,6 @@ const createReview = async (req, res) => {
             });
         }
 
-        // 3. Find a booking that has not already been reviewed
         let booking = null;
 
         for (const currentBooking of bookings) {
@@ -54,7 +48,6 @@ const createReview = async (req, res) => {
             });
         }
 
-        // 4. Find the listing
         const listing = await Listing.findById(listingId);
 
         if (!listing) {
@@ -63,7 +56,6 @@ const createReview = async (req, res) => {
             });
         }
 
-        // 5. Create the review using the actual booking ID
         const review = new Review({ 
             booking: booking._id,
             listing: listing._id,
@@ -73,13 +65,10 @@ const createReview = async (req, res) => {
             comment: comment.trim(),
         });
 
-        // 6. Save the review
         await review.save();
 
-        // 7. Update the listing's average rating
         await updateListingRating(listing._id);
 
-        // 8. Send the response to the frontend
         return res.status(201).json({
             message: "Review created successfully",
             review,
@@ -105,11 +94,6 @@ const createReview = async (req, res) => {
     }
 };
 
-
-
-
-
-// GET ALL REVIEWS FOR A LISTING
 const getListingReviews = async (req, res) => {
     try {
         const { listingId } = req.params;
@@ -149,7 +133,6 @@ const getListingReviews = async (req, res) => {
     }
 };
 
-// HOST REPLIES TO A REVIEW
 const replyToReview = async (req, res) => {
     try {
         const { text } = req.body;
@@ -195,7 +178,6 @@ const replyToReview = async (req, res) => {
     }
 };
 
-// EDIT A REVIEW
 const editReview = async (req, res) => {
     try {
         const { reviewId } = req.params;
@@ -247,7 +229,6 @@ const editReview = async (req, res) => {
     }
 }; 
 
-// RECALCULATE THE LISTING'S AVERAGE RATING
 const updateListingRating = async (listingId) => {
     const listing = await Listing.findById(listingId);
 

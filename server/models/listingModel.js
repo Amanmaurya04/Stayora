@@ -100,8 +100,6 @@ const listingSchema = new mongoose.Schema(
             required: true
         },
 
-        
-
         avgRating: {
             type: Number,
             default: 0

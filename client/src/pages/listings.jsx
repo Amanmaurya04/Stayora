@@ -8,7 +8,6 @@ const Listings = () => {
   const navigate = useNavigate();
   const [listings, setListings] = useState([]);
   const [meta, setMeta] = useState({ currentPage: 1, totalPages: 1, totalListings: 0 });
-  // const [query, setQuery] = useState({ page: 1, limit: 30 });
   const { query, setQuery } = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -36,8 +35,6 @@ const Listings = () => {
     fetchListings(query);
   }, [query]);
 
-  // Navbar hands back { city, minPrice, maxPrice, maxGuest, page, limit }
-  //  const handleSearch = (searchQuery) => setQuery(searchQuery);
 
   const goToPage = (page) => {
     setQuery((q) => ({ ...q, page }));
@@ -49,7 +46,6 @@ const Listings = () => {
 
       <main className="sa-container container py-4 py-md-5">
 
-        {/* page heading */}
 
         <div className="listing-header mb-4 mb-md-5">
           <h1 className="listing-heading">Discover Stays</h1>
@@ -61,7 +57,6 @@ const Listings = () => {
 
         </div>
 
-        {/* result count */}
 
         {!loading && !error && (
           <p className="text-secondary small mb-4">
@@ -74,7 +69,6 @@ const Listings = () => {
         )}
 
 
-        {/* loading */}
         {loading && (
           <div className="listing-status py-5 text-center">
             <div className="spinner-border text-secondary" role="status">
@@ -85,9 +79,6 @@ const Listings = () => {
             </p>
           </div>
         )}
-
-
-        {/* error */}
 
         {!loading && error && (
           <div className="alert alert-light border text-center py-5">
@@ -105,8 +96,6 @@ const Listings = () => {
           </div>
         )}
 
-
-
         {!loading && !error && listings.length === 0 && (
           <div className="listing-empty text-center py-5">
             <div className="empty-icon">
@@ -122,7 +111,6 @@ const Listings = () => {
           </div>
         )}
 
-        {/* experience card */}
 
         {!loading && !error && listings.length > 0 && (
           <div className="row g-4">
@@ -226,127 +214,13 @@ const Listings = () => {
   )
 }
 
-
-
       </main >
-
-
 
     </div >
 
 
   )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //   (
-  //     <div className="min-vh-100 bg-white">
-  // {/* <Navbar onSearch={handleSearch} /> */}
-
-
-  //       <main className="li-container py-4">
-  //         {!loading && !error && (
-  //           <p className="text-secondary small mb-4">
-  //             {meta.totalListings} {meta.totalListings === 1 ? "stay" : "stays"} found
-  //           </p>
-  //         )}
-
-  //         {loading && (
-  //           <div className="py-5 text-center">
-  //             <div className="spinner-border text-secondary" role="status" />
-  //           </div>
-  //         )}
-
-  //         {error && (
-  //           <div className="alert alert-light border text-center py-4">
-  //             <p className="fw-semibold mb-1">Listings didn't load</p>
-  //             <p className="text-secondary mb-3">{error}</p>
-  //             <button className="btn btn-dark rounded-pill px-4" onClick={() => fetchListings(query)}>
-  //               Try again
-  //             </button>
-  //           </div>
-  //         )}
-
-  //         {!loading && !error && listings.length === 0 && (
-  //           <div className="py-5 text-center">
-  //             <p className="fs-5 fw-semibold mb-1">No stays match this search</p>
-  //             <p className="text-secondary">Try a wider price range or fewer guests.</p>
-  //           </div>
-  //         )}
-
-  //         {!loading && !error && listings.length > 0 && (
-  //           <div className="row g-4">
-  //             <h1>Popular homes, Just for you</h1>
-  //             {listings.map((l) => (
-  //               <div className="col-12 col-lg-3 col-md-3 col-sm-3 col-xl-2 " key={l._id}>
-  //                 {/* col-sm-6 col-lg-4 col-xl-3 */}
-
-  //                 <article
-  //                 onClick={() => navigate(`/listings/${l._id}`) }
-  //                 className="li-card">
-  //                   <div className="li-card-img">
-  //                     {l.images?.[0] ? (
-  //                       <img src={l.images[0]} alt={l.title} loading="lazy" />
-  //                     ) : (
-  //                       <div className="li-card-fallback" />
-  //                     )}
-  //                   </div>
-  //                   <div className="d-flex justify-content-between align-items-start gap-2 mt-2">
-  //                     <h3 className="li-card-title mb-0">
-  //                       {l.location?.city}, {l.location?.state}
-  //                     </h3>
-  //                     {l.rating != null && <span className="li-card-rating">★ {l.rating}</span>}
-  //                   </div>
-  //                   <p className="li-card-sub mb-0">{l.title}</p>
-  //                   <p className="li-card-sub mb-0">Up to {l.maxGuest} guests</p>
-  //                   <p className="li-card-price mb-0">
-  //                     <strong>₹{Number(l.pricePerNight).toLocaleString("en-IN")}</strong> night
-  //                   </p>
-  //                 </article>
-
-
-  //               </div>
-  //             ))}
-  //           </div>
-  //         )}
-
-  //         {!loading && meta.totalPages > 1 && (
-  //           <nav className="d-flex justify-content-center align-items-center gap-3 mt-5">
-  //             <button
-  //               className="btn btn-outline-dark rounded-pill px-3"
-  //               disabled={meta.currentPage <= 1}
-  //               onClick={() => goToPage(meta.currentPage - 1)}
-  //             >
-  //               Previous
-  //             </button>
-  //             <span className="small text-secondary">
-  //               Page {meta.currentPage} of {meta.totalPages}
-  //             </span>
-  //             <button
-  //               className="btn btn-outline-dark rounded-pill px-3"
-  //               disabled={meta.currentPage >= meta.totalPages}
-  //               onClick={() => goToPage(meta.currentPage + 1)}
-  //             >
-  //               Next
-  //             </button>
-  //           </nav>
-  //         )}
-  //       </main>
-  //     </div>
-  //   );
 }
 
 export default Listings
-
-// export default function

@@ -1,4 +1,3 @@
-
 const Razorpay = require("razorpay");
 const ExperienceBooking = require("../models/experienceBookingModel");
 const crypto = require("crypto");
@@ -10,19 +9,16 @@ const razorpay = new Razorpay({
 });
 
 
-// CREATE RAZORPAY ORDER
 const createExperienceOrder = async (req, res) => {
     try {
         const { bookingId } = req.body;
 
-        // 1. Validate booking ID
         if (!bookingId || !mongoose.isValidObjectId(bookingId)) {
             return res.status(400).json({
                 message: "Valid booking ID is required",
             });
         }
 
-        // 2. Find booking
         const booking = await ExperienceBooking.findById(bookingId);
 
         if (!booking) {
@@ -31,14 +27,12 @@ const createExperienceOrder = async (req, res) => {
             });
         }
 
-        // 3. Check booking owner
         if (booking.guest.toString() !== req.user.id.toString()) {
             return res.status(403).json({
                 message: "You are not allowed to pay for this booking",
             });
         }
 
-        // 4. Check booking status
         if (booking.status !== "pending") {
             return res.status(400).json({
                 message: "This booking is not available for payment",
@@ -51,7 +45,6 @@ const createExperienceOrder = async (req, res) => {
             });
         }
 
-        // 5. Calculate amount in paise
         const amount = Math.round(booking.totalPrice * 100);
 
         if (!Number.isSafeInteger(amount) || amount <= 0) {
@@ -62,7 +55,6 @@ const createExperienceOrder = async (req, res) => {
 
         let order;
 
-        // 6. Reuse an existing usable Razorpay order
         if (booking.razorpayOrderId) {
             order = await razorpay.orders.fetch(booking.razorpayOrderId);
 
@@ -81,7 +73,6 @@ const createExperienceOrder = async (req, res) => {
                 });
             }
         } else {
-            // 7. Create new Razorpay order
             order = await razorpay.orders.create({
                 amount,
                 currency: "INR",
@@ -110,7 +101,6 @@ const createExperienceOrder = async (req, res) => {
 };
 
 
-// VERIFY RAZORPAY PAYMENT
 const verifyExperiencePayment = async (req, res) => {
     try {
         const {
@@ -120,7 +110,6 @@ const verifyExperiencePayment = async (req, res) => {
             razorpay_signature,
         } = req.body;
 
-        // 1. Validate required fields
         if (
             !bookingId ||
             !mongoose.isValidObjectId(bookingId) ||
@@ -133,7 +122,6 @@ const verifyExperiencePayment = async (req, res) => {
             });
         }
 
-        // 2. Find booking
         const booking = await ExperienceBooking.findById(bookingId);
 
         if (!booking) {
@@ -142,14 +130,12 @@ const verifyExperiencePayment = async (req, res) => {
             });
         }
 
-        // 3. Check owner
         if (booking.guest.toString() !== req.user.id.toString()) {
             return res.status(403).json({
                 message: "You are not allowed to verify this payment",
             });
         }
 
-        // 4. Make verification idempotent
         if (booking.paymentStatus === "paid") {
             if (
                 booking.razorpayPaymentId === razorpay_payment_id &&
@@ -172,14 +158,12 @@ const verifyExperiencePayment = async (req, res) => {
             });
         }
 
-        // 5. Check order ID
         if (booking.razorpayOrderId !== razorpay_order_id) {
             return res.status(400).json({
                 message: "Invalid Razorpay order",
             });
         }
 
-        // 6. Generate expected signature
         const body = razorpay_order_id + "|" + razorpay_payment_id;
 
         const expectedSignature = crypto
@@ -187,7 +171,6 @@ const verifyExperiencePayment = async (req, res) => {
             .update(body)
             .digest("hex");
 
-        // 7. Compare signatures safely
         const expectedBuffer = Buffer.from(expectedSignature, "hex");
         const receivedBuffer = Buffer.from(razorpay_signature, "hex");
 
@@ -200,12 +183,10 @@ const verifyExperiencePayment = async (req, res) => {
             });
         }
 
-        // 8. Fetch payment directly from Razorpay
         const payment = await razorpay.payments.fetch(
             razorpay_payment_id
         );
 
-        // 9. Verify payment details
         const expectedAmount = Math.round(booking.totalPrice * 100);
 
         if (
@@ -224,7 +205,6 @@ const verifyExperiencePayment = async (req, res) => {
             });
         }
 
-        // 10. Atomically update booking after successful verification
         const updatedBooking = await ExperienceBooking.findOneAndUpdate(
             {
                 _id: bookingId,
@@ -247,11 +227,9 @@ const verifyExperiencePayment = async (req, res) => {
             }
         );
 
-        // 11. Handle cases where booking changed during verification
         if (!updatedBooking) {
             const latestBooking = await ExperienceBooking.findById(bookingId);
 
-            // Same payment was already verified
             if (
                 latestBooking &&
                 latestBooking.paymentStatus === "paid" &&

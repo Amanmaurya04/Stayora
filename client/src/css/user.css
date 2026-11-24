@@ -1,8 +1,3 @@
-
-/* ==============================
-   USER PROFILE DASHBOARD
-============================== */
-
 .user-dashboard {
     width: min(1180px, 92%);
     margin: 55px auto 90px;
@@ -32,10 +27,6 @@
     color: #717171;
     font-size: 15px;
 }
-
-/* ==============================
-   PROFILE CARD
-============================== */
 
 .profile-card {
     display: flex;
@@ -84,10 +75,6 @@
     color: #717171;
 }
 
-/* ==============================
-   BOOKING HEADING
-============================== */
-
 .bookings-heading {
     display: flex;
     align-items: flex-end;
@@ -105,10 +92,6 @@
     color: #717171;
     font-size: 13px;
 }
-
-/* ==============================
-   BOOKING SECTIONS
-============================== */
 
 .booking-section {
     margin-bottom: 65px;
@@ -141,10 +124,6 @@
     border-radius: 20px;
 }
 
-/* ==============================
-   BOOKING GRID
-============================== */
-
 .booking-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -163,10 +142,6 @@
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
 }
-
-/* ==============================
-   BOOKING IMAGE
-============================== */
 
 .booking-image-wrapper {
     position: relative;
@@ -230,10 +205,6 @@
     color: #555555;
     background: #eeeeee;
 }
-
-/* ==============================
-   BOOKING CARD CONTENT
-============================== */
 
 .booking-card-content {
     padding: 22px;
@@ -312,10 +283,6 @@
     margin-top: 17px;
 }
 
-/* ==============================
-   REFUND INFORMATION
-============================== */
-
 .refund-information {
     display: flex;
     align-items: center;
@@ -335,10 +302,6 @@
     font-size: 12px;
     font-weight: 700;
 }
-
-/* ==============================
-   CANCEL BUTTON
-============================== */
 
 .cancel-booking-button {
     width: 100%;
@@ -374,10 +337,6 @@
     font-size: 12px;
 }
 
-/* ==============================
-   EMPTY BOOKING STATE
-============================== */
-
 .empty-bookings {
     padding: 55px 20px;
     text-align: center;
@@ -403,10 +362,6 @@
     margin-bottom: 0;
 }
 
-/* ==============================
-   ALERTS
-============================== */
-
 .booking-alert {
     padding: 14px 17px;
     border-radius: 9px;
@@ -423,10 +378,6 @@
     background: #fdecea;
     color: #c0392b;
 }
-
-/* ==============================
-   LOADING
-============================== */
 
 .profile-loading,
 .booking-loading {
@@ -459,10 +410,6 @@
     margin: 100px auto;
     color: #c0392b;
 }
-
-/* ==============================
-   RESPONSIVE DESIGN
-============================== */
 
 @media (max-width: 768px) {
     .user-dashboard {
@@ -534,5 +481,76 @@
 
     .booking-details {
         gap: 10px;
+    }
+}
+
+.profile-information {
+    min-width: 0;
+}
+
+.profile-information h2,
+.profile-information > p,
+.booking-card-content h4 {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+    .bookings-heading,
+    .section-heading {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .user-page-header h1 {
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-dashboard {
+        margin-bottom: 60px;
+    }
+
+    .user-page-header h1 {
+        font-size: 24px;
+    }
+
+    .bookings-heading h2 {
+        font-size: 22px;
+    }
+
+    .booking-section {
+        margin-bottom: 45px;
+    }
+
+    .booking-grid {
+        gap: 18px;
+    }
+
+    .booking-card-content h4 {
+        font-size: 17px;
+    }
+
+    .booking-payment-row {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .booking-status {
+        top: 10px;
+        right: 10px;
+    }
+}
+
+@media (max-width: 360px) {
+    .profile-avatar {
+        width: 55px;
+        height: 55px;
+        min-width: 55px;
+        font-size: 22px;
+    }
+
+    .booking-details {
+        grid-template-columns: 1fr;
     }
 }

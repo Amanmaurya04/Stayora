@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 
 import {
@@ -24,7 +23,6 @@ function User() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    // Fetch profile
     const fetchUser = async () => {
         try {
             const data = await getMyProfile();
@@ -36,7 +34,6 @@ function User() {
         }
     };
 
-    // Fetch bookings
     const fetchBookings = async () => {
         try {
             const bookingData = await getMyBookings();
@@ -56,7 +53,6 @@ function User() {
         fetchBookings();
     }, []);
 
-    // Format dates
     const formatDate = (date) => {
         if (!date) return "N/A";
 
@@ -67,7 +63,6 @@ function User() {
         });
     };
 
-    // Format booking status
     const getStatusClass = (status) => {
         const normalizedStatus = String(status || "").toLowerCase();
 
@@ -90,7 +85,6 @@ function User() {
         return "status-default";
     };
 
-    // Format refund status
     const getRefundLabel = (status) => {
         const labels = {
             not_requested: "Not requested",
@@ -102,7 +96,6 @@ function User() {
         return labels[status] || "Not applicable";
     };
 
-    // Decide whether booking can be cancelled
     const canCancel = (booking, type) => {
         const status = String(booking.status || "").toLowerCase();
 
@@ -117,7 +110,6 @@ function User() {
         return status === "pending" || status === "confirmed";
     };
 
-    // Refresh booking data after cancellation
     const refreshBookings = async () => {
         const bookingData = await getMyBookings();
 
@@ -125,7 +117,6 @@ function User() {
         setExperiences(bookingData.experiences || []);
     };
 
-    // Cancel booking
     const handleCancelBooking = async (booking, type) => {
         const bookingId = booking._id;
 
@@ -156,31 +147,20 @@ function User() {
             setSuccess(
                 response.message || "Booking cancelled successfully."
             );
-
-            // Fetch updated booking and refund status
-            await refreshBookings();
-
         } catch (error) {
             console.error("Booking cancellation error:", error);
-
-    console.log("Full cancellation error:", error);
-    console.log("Backend response:", error.response?.data);
-    console.log("HTTP status:", error.response?.status);
 
             setError(
                 error.response?.data?.message ||
                 "Unable to cancel booking. Please try again."
             );
-
-            // Refresh in case the server processed the request
-            // but the response was interrupted.
+        } finally {
             try {
                 await refreshBookings();
             } catch (refreshError) {
                 console.error("Booking refresh error:", refreshError);
             }
 
-        } finally {
             setCancellingId(null);
         }
     };
@@ -205,7 +185,6 @@ function User() {
     return (
         <div className="user-dashboard">
 
-            {/* PAGE HEADER */}
             <div className="user-page-header">
                 <div>
                     <p className="user-eyebrow">YOUR STAYORA ACCOUNT</p>
@@ -214,7 +193,6 @@ function User() {
                 </div>
             </div>
 
-            {/* PROFILE CARD */}
             <section className="profile-card">
 
                 <div className="profile-avatar">
@@ -233,7 +211,6 @@ function User() {
 
             </section>
 
-            {/* FEEDBACK */}
             {success && (
                 <div className="booking-alert booking-alert-success">
                     {success}
@@ -246,7 +223,6 @@ function User() {
                 </div>
             )}
 
-            {/* BOOKINGS HEADER */}
             <div className="bookings-heading">
                 <div>
                     <p className="user-eyebrow">YOUR RESERVATIONS</p>
@@ -265,7 +241,6 @@ function User() {
                 </div>
             ) : (
                 <>
-                    {/* ================= STAY BOOKINGS ================= */}
 
                     <section className="booking-section">
 
@@ -395,7 +370,6 @@ function User() {
 
                     </section>
 
-                    {/* ================= EXPERIENCE BOOKINGS ================= */}
 
                     <section className="booking-section experience-section">
 
@@ -537,207 +511,3 @@ function User() {
 }
 
 export default User;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React from 'react'
-// import { useState, useEffect } from 'react';
-// import { getMyProfile, getMyBookings } from '../services/userServices';
-
-// function User() {
-
-//     const [user, setUser] = useState(null);
-//     const [loading, setLoading] = useState(true);
-//     const [experiences, setExperiences] = useState([]);
-//     const [stays, setStays] = useState([]);
-//     const [bookingLoading, setBookingLoading] = useState(true);
-
-//    useEffect(() => {
-
-//     const fetchUser = async () => {
-//         try {
-//             const data = await getMyProfile();
-//             setUser(data.user);
-//         }
-//         catch (error) {
-//             console.log("Profile fetch error:", error);
-//         }
-//         finally {
-//             setLoading(false);
-//         }
-//     };
-
-//     const fetchBookings = async () => {
-//         try {
-//             const bookingData = await getMyBookings();
-
-//             setStays(bookingData.stays);
-//             setExperiences(bookingData.experiences);
-//         }
-//         catch (error) {
-//             console.log("Bookings fetch error:", error);
-//         }
-//         finally {
-//             setBookingLoading(false);
-//         }
-//     };
-
-//     fetchUser();
-//     fetchBookings();
-
-// }, []);
-
-//     if (loading) {
-//         return <h3>Loading profile...</h3>;
-//     }
-
-//     if (!user) {
-//         return <h3>Unable to load profile.</h3>;
-//     }
-
-//     return (
-// <div>
-
-
-
-//         <div className="container mt-5">
-
-//             <h2>My Profile</h2>
-
-//             <div className="card p-4 mt-3">
-
-//                 <h4>{user.username}</h4>
-
-//                 <p>Email: {user.email}</p>
-
-//                 <p>Contact: {user.contact || "Not provided"}</p>
-
-//             </div>
-
-//         </div>
-
-
-//  <div className="container mt-5">
-
-//             <h2>My Bookings</h2>
-
-//             {/* Stay Bookings */}
-//             <h4 className="mt-4">Stay Bookings</h4>
-
-//             {stays.length === 0 ? (
-//                 <p>You have no stay bookings.</p>
-//             ) : (
-
-//                 stays.map((booking) => (
-
-//                     <div className="card p-3 mb-3" key={booking._id}>
-
-//                         <h5>{booking.title}</h5>
-
-//                         {booking.image && (
-//                             <img
-//                                 src={booking.image}
-//                                 alt={booking.title}
-//                                 style={{
-//                                     width: "150px",
-//                                     height: "100px",
-//                                     objectFit: "cover"
-//                                 }}
-//                             />
-//                         )}
-
-//                         <p>Location: {booking.location?.city || "N/A"}</p>
-
-//                         <p>Check-in: {booking.checkIn}</p>
-
-//                         <p>Check-out: {booking.checkOut}</p>
-
-//                         <p>Total Price: ₹{booking.totalPrice}</p>
-
-//                         <p>Status: {booking.status}</p>
-
-//                     </div>
-
-//                 ))
-
-//             )}
-
-//             {/* Experience Bookings */}
-//             <h4 className="mt-5">Experience Bookings</h4>
-
-//             {experiences.length === 0 ? (
-//                 <p>You have no experience bookings.</p>
-//             ) : (
-
-//                 experiences.map((booking) => (
-
-//                     <div className="card p-3 mb-3" key={booking._id}>
-
-//                         <h5>{booking.title}</h5>
-
-//                         {booking.image && (
-//                             <img
-//                                 src={booking.image}
-//                                 alt={booking.title}
-//                                 style={{
-//                                     width: "150px",
-//                                     height: "100px",
-//                                     objectFit: "cover"
-//                                 }}
-//                             />
-//                         )}
-
-//                         <p>Location: {booking.location?.city || "N/A"}</p>
-
-//                         <p>Participants: {booking.participants}</p>
-
-//                         <p>Total Price: ₹{booking.totalPrice}</p>
-
-//                         <p>Status: {booking.status}</p>
-
-//                         {booking.slot && (
-//                             <>
-//                                 <p>Date: {booking.slot.date}</p>
-//                                 <p>Time: {booking.slot.startTime}</p>
-//                             </>
-//                         )}
-
-//                     </div>
-
-//                 ))
-
-//             )}
-
-//         </div>
-
-
-// </div>
-
-
-//     );
-// }
-
-// export default User;

@@ -32,3 +32,23 @@
   padding: 30px;
   box-sizing: border-box;
 }
+
+@media (max-width: 576px) {
+  .signup-container,
+  .login-container {
+    min-height: auto;
+    padding: 22px 18px;
+  }
+
+  .signup-container .title,
+  .login-container .title {
+    font-size: 1.6rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .signup-container,
+  .login-container {
+    padding: 18px 14px;
+  }
+}

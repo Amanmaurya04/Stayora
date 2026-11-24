@@ -1,15 +1,12 @@
-
 const ExperienceReview = require("../models/experienceReviewModel");
 const ExperienceBooking = require("../models/experienceBookingModel");
 const Experience = require("../models/experienceModel");
 
-// CREATE EXPERIENCE REVIEW
 const createReview = async (req, res) => {
     try {
         const { ratings, comment } = req.body;
         const { experienceId } = req.params;
 
-        // 1. Validate the input
         const rating = Number(ratings);
 
         if (
@@ -28,7 +25,6 @@ const createReview = async (req, res) => {
             });
         }
 
-        // 2. Find the experience
         const experience = await Experience.findById(experienceId);
 
         if (!experience) {
@@ -37,7 +33,7 @@ const createReview = async (req, res) => {
             });
         }
 
-    
+
         const bookings = await ExperienceBooking.find({
     guest: req.user.id,
     experience: experienceId,
@@ -51,7 +47,6 @@ const createReview = async (req, res) => {
             });
         }
 
-        // 4. Find a booking that has not been reviewed
         let booking = null;
 
         for (const currentBooking of bookings) {
@@ -72,7 +67,6 @@ const createReview = async (req, res) => {
             });
         }
 
-        // 5. Create the review
         const review = new ExperienceReview({
             booking: booking._id,
             experience: experience._id,
@@ -84,10 +78,8 @@ const createReview = async (req, res) => {
 
         await review.save();
 
-        // 6. Update the experience's average rating
         await updateExperienceRating(experience._id);
 
-        // 7. Send the response
         return res.status(201).json({
             message: "Review created successfully",
             review,
@@ -117,7 +109,6 @@ const createReview = async (req, res) => {
 };
 
 
-// LIST EXPERIENCE REVIEWS
 const listExperienceReview = async (req, res) => {
     try {
         const { experienceId } = req.params;
@@ -142,7 +133,6 @@ const listExperienceReview = async (req, res) => {
             .populate("guest", "username")
             .sort({ createdAt: -1 });
 
-        // An experience with no reviews is still valid
         return res.status(200).json({
             allReviews,
             reviewCount: allReviews.length,
@@ -163,7 +153,6 @@ const listExperienceReview = async (req, res) => {
 };
 
 
-// UPDATE EXPERIENCE AVERAGE RATING
 const updateExperienceRating = async (experienceId) => {
     const experience = await Experience.findById(experienceId);
 

@@ -25,8 +25,6 @@ console.log("Ownership middleware:");
 console.log("Experience host:", experience.host.toString());
 console.log("Logged-in user:", req.user.id);
 
-
-
     if (experience.host.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         message: "You don't own this experience",
@@ -44,7 +42,5 @@ console.log("Logged-in user:", req.user.id);
     });
   }
 };
-
-
 
 module.exports = experienceOwnershipMiddleware;

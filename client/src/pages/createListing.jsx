@@ -92,8 +92,6 @@ function CreateListing() {
 
     const [errors, setErrors] = useState({});
 
-
-
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -103,8 +101,6 @@ function CreateListing() {
         });
     };
 
-
-
     const selectType = (selectedType) => {
         setForm({
             ...form,
@@ -112,16 +108,12 @@ function CreateListing() {
         });
     };
 
-
-
     const selectRoomType = (selectedRoomType) => {
         setForm({
             ...form,
             roomType: selectedRoomType
         });
     };
-
-
 
     const handleLocationChange = (e) => {
         const { name, value } = e.target;
@@ -134,8 +126,6 @@ function CreateListing() {
             }
         });
     };
-
-
 
     const handleAmenityChange = (e) => {
         const { value, checked } = e.target;
@@ -158,8 +148,6 @@ function CreateListing() {
         }
     };
 
-
-
     const handleHouseRuleChange = (e) => {
         const { value, checked } = e.target;
 
@@ -181,8 +169,6 @@ function CreateListing() {
         }
     };
 
-
-
     const handleImageChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
 
@@ -202,8 +188,6 @@ function CreateListing() {
 
         e.target.value = "";
     };
-
-
 
     const validate = () => {
         const e = {};
@@ -236,8 +220,6 @@ function CreateListing() {
         setErrors(e);
         return Object.keys(e).length === 0;
     };
-
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -481,10 +463,6 @@ function CreateListing() {
                     </div>
 
                     <hr className="mt-5" />
-
-
-
-
 
                     <div>
                         <h4 className="mt-5 fw-medium">Add photos of your stay</h4>

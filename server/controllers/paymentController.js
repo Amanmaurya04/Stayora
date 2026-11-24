@@ -1,4 +1,3 @@
-
 const Razorpay = require("razorpay");
 const Booking = require("../models/bookingModel");
 const ExperienceBooking = require("../models/experienceBookingModel");
@@ -141,7 +140,6 @@ const verifyPayment = async (req, res) => {
             });
         }
 
-        // A repeat request for the same already-paid transaction is safe.
         if (booking.paymentStatus === "Paid") {
             if (
                 booking.razorpayOrderId === razorpay_order_id &&
@@ -170,7 +168,6 @@ const verifyPayment = async (req, res) => {
             });
         }
 
-        // Verify the signature generated for this order and payment.
         const body =
             `${razorpay_order_id}|${razorpay_payment_id}`;
 
@@ -191,7 +188,6 @@ const verifyPayment = async (req, res) => {
             });
         }
 
-        // Verify transaction details directly with Razorpay.
         const payment = await razorpay.payments.fetch(
             razorpay_payment_id
         );
@@ -215,15 +211,12 @@ const verifyPayment = async (req, res) => {
             });
         }
 
-        // This assumes Razorpay automatic capture is enabled.
         if (payment.status !== "captured") {
             return res.status(400).json({
                 message: "Payment has not been captured yet",
             });
         }
 
-        // Conditional update prevents a cancellation that occurred
-        // during verification from being overwritten by confirmation.
         const updatedBooking = await Booking.findOneAndUpdate(
             {
                 _id: booking._id,
@@ -278,207 +271,14 @@ const verifyPayment = async (req, res) => {
     }
 };
 
-// const webhook = async (req, res) => {
-//     try {
-//         // express.raw() must be used on this route.
-//         if (!Buffer.isBuffer(req.body)) {
-//             return res.status(400).json({
-//                 message: "Webhook requires the original raw request body",
-//             });
-//         }
-
-//         const webhookSignature =
-//             req.headers["x-razorpay-signature"];
-
-//         if (
-//             typeof webhookSignature !== "string" ||
-//             !process.env.RAZORPAY_WEBHOOK_SECRET
-//         ) {
-//             return res.status(400).json({
-//                 message: "Webhook signature or secret is missing",
-//             });
-//         }
-
-//         const expectedSignature = crypto
-//             .createHmac(
-//                 "sha256",
-//                 process.env.RAZORPAY_WEBHOOK_SECRET
-//             )
-//             .update(req.body)
-//             .digest("hex");
-
-//         if (!signaturesMatch(
-//             expectedSignature,
-//             webhookSignature
-//         )) {
-//             return res.status(400).json({
-//                 message: "Invalid webhook signature",
-//             });
-//         }
-
-//         const event = JSON.parse(req.body.toString("utf8"));
-
-//         const payment =
-//             event.payload?.payment?.entity;
-
-//         if (!payment) {
-//             return res.status(200).json({
-//                 message: "Webhook received",
-//             });
-//         }
-
-//         if (event.event === "payment.captured") {
-//             // First, check listing bookings.
-//             const booking = await Booking.findOne({
-//                 razorpayOrderId: payment.order_id,
-//             });
-
-//             if (booking) {
-//                 const expectedAmount = Math.round(
-//                     Number(booking.totalPrice) * 100
-//                 );
-
-//                 if (
-//                     Number(payment.amount) !== expectedAmount ||
-//                     payment.currency !== "INR"
-//                 ) {
-//                     console.error(
-//                         "Listing webhook amount/currency mismatch:",
-//                         booking._id
-//                     );
-
-//                     return res.status(400).json({
-//                         message: "Payment details do not match booking",
-//                     });
-//                 }
-
-//                 // Do not turn a cancelled booking into a confirmed one.
-//                 // If money was captured after cancellation, reconcile/refund it.
-//                 if (booking.status === "Cancelled") {
-//                     console.error(
-//                         "Payment captured for cancelled booking:",
-//                         booking._id
-//                     );
-
-//                     return res.status(200).json({
-//                         message:
-//                             "Payment captured for cancelled booking; reconciliation required",
-//                     });
-//                 }
-
-//                 await Booking.updateOne(
-//                     {
-//                         _id: booking._id,
-//                         status: { $ne: "Cancelled" },
-//                     },
-//                     {
-//                         $set: {
-//                             paymentStatus: "Paid",
-//                             status: "Confirmed",
-//                             razorpayPaymentId: payment.id,
-//                         },
-//                     }
-//                 );
-
-//                 return res.status(200).json({
-//                     message: "Listing payment webhook processed",
-//                 });
-//             }
-
-//             // Preserve your existing experience payment flow.
-//             const experienceBooking =
-//                 await ExperienceBooking.findOne({
-//                     razorpayOrderId: payment.order_id,
-//                 });
-
-//             if (experienceBooking) {
-//                 const expectedAmount = Math.round(
-//                     Number(experienceBooking.totalPrice) * 100
-//                 );
-
-//                 if (
-//                     Number(payment.amount) !== expectedAmount ||
-//                     payment.currency !== "INR"
-//                 ) {
-//                     return res.status(400).json({
-//                         message:
-//                             "Experience payment amount or currency mismatch",
-//                     });
-//                 }
-
-//                 if (
-//                     experienceBooking.status !== "cancelled"
-//                 ) {
-//                     experienceBooking.paymentStatus = "paid";
-//                     experienceBooking.status = "confirmed";
-//                     experienceBooking.razorpayPaymentId =
-//                         payment.id;
-
-//                     await experienceBooking.save();
-//                 }
-
-//                 return res.status(200).json({
-//                     message: "Experience payment webhook processed",
-//                 });
-//             }
-//         }
-
-//         if (event.event === "payment.failed") {
-//             const booking = await Booking.findOne({
-//                 razorpayOrderId: payment.order_id,
-//             });
-
-//             if (booking) {
-//                 // Never overwrite a successful payment with a late failure.
-//                 if (booking.paymentStatus !== "Paid") {
-//                     booking.paymentStatus = "Failed";
-//                     await booking.save();
-//                 }
-
-//                 return res.status(200).json({
-//                     message: "Listing payment failure processed",
-//                 });
-//             }
-
-//             const experienceBooking =
-//                 await ExperienceBooking.findOne({
-//                     razorpayOrderId: payment.order_id,
-//                 });
-
-//             if (experienceBooking) {
-//                 if (experienceBooking.paymentStatus !== "paid") {
-//                     experienceBooking.paymentStatus = "unpaid";
-//                     await experienceBooking.save();
-//                 }
-
-//                 return res.status(200).json({
-//                     message: "Experience payment failure processed",
-//                 });
-//             }
-//         }
-
-//         return res.status(200).json({
-//             message: "Webhook processed successfully",
-//         });
-//     } catch (error) {
-//         console.error("Webhook error:", error);
-
-//         return res.status(500).json({
-//             message: "Webhook processing failed",
-//         });
-//     }
-// };
-
 const webhook = async (req, res) => {
     try {
-        // 1. Verify that the original raw body is available
         if (!Buffer.isBuffer(req.body)) {
             return res.status(400).json({
                 message: "Webhook requires the original raw request body",
             });
         }
 
-        // 2. Verify Razorpay webhook signature
         const webhookSignature =
             req.headers["x-razorpay-signature"];
 
@@ -505,130 +305,7 @@ const webhook = async (req, res) => {
             });
         }
 
-        // 3. Parse webhook event
         const event = JSON.parse(req.body.toString("utf8"));
-
-        // 4. Handle refund events first
-        // Refund events contain refund.entity and payment.entity
-        // if (event.event?.startsWith("refund.")) {
-        //     const refund = event.payload?.refund?.entity;
-
-        //     if (!refund || !refund.payment_id || !refund.id) {
-        //         return res.status(200).json({
-        //             message: "Refund webhook received without required details",
-        //         });
-        //     }
-
-        //     // Find the booking using its Razorpay payment ID
-        //     const updateRefund = async (Model, refundedStatus) => {
-        //         const booking = await Model.findOne({
-        //             razorpayPaymentId: refund.payment_id,
-        //         });
-
-        //         if (!booking) {
-        //             return { found: false };
-        //         }
-
-        //         // This implementation supports full booking refunds
-        //         const expectedAmount = Math.round(
-        //             Number(booking.totalPrice) * 100
-        //         );
-
-        //         if (Number(refund.amount) !== expectedAmount) {
-        //             console.error(
-        //                 "Refund amount mismatch for booking:",
-        //                 booking._id
-        //             );
-
-        //             return {
-        //                 found: true,
-        //                 mismatch: true,
-        //             };
-        //         }
-
-        //         // Determine the refund status
-        //         let refundStatus = "processing";
-
-        //         if (
-        //             event.event === "refund.failed" ||
-        //             refund.status === "failed"
-        //         ) {
-        //             refundStatus = "failed";
-        //         } else if (
-        //             event.event === "refund.processed" ||
-        //             refund.status === "processed"
-        //         ) {
-        //             refundStatus = "processed";
-        //         }
-
-        //         const filter = {
-        //             _id: booking._id,
-        //             razorpayPaymentId: refund.payment_id,
-
-        //             // Do not let an older refund overwrite a newer one
-        //             $or: [
-        //                 { razorpayRefundId: null },
-        //                 { razorpayRefundId: refund.id },
-        //             ],
-        //         };
-
-        //         const update = {
-        //             $set: {
-        //                 refundStatus,
-        //                 razorpayRefundId: refund.id,
-        //             },
-        //         };
-
-        //         // Only mark payment refunded after Razorpay processes it
-        //         if (refundStatus === "processed") {
-        //             update.$set.paymentStatus = refundedStatus;
-        //         }
-
-        //         // Do not downgrade a completed or failed refund
-        //         // because of a delayed refund.created event
-        //         if (refundStatus === "processing") {
-        //             filter.refundStatus = {
-        //                 $nin: ["processed", "failed"],
-        //             };
-        //         }
-
-        //         const result = await Model.updateOne(filter, update);
-
-        //         return {
-        //             found: true,
-        //             updated: result.modifiedCount > 0,
-        //         };
-        //     };
-
-        //     // First check stay bookings
-        //     let result = await updateRefund(Booking, "Refunded");
-
-        //     // If no stay booking matched, check experience bookings
-        //     if (!result.found) {
-        //         result = await updateRefund(
-        //             ExperienceBooking,
-        //             "refunded"
-        //         );
-        //     }
-
-        //     if (result.mismatch) {
-        //         return res.status(200).json({
-        //             message: "Refund amount mismatch; manual reconciliation required",
-        //         });
-        //     }
-
-        //     if (!result.found) {
-        //         console.error(
-        //             "No booking found for refund payment:",
-        //             refund.payment_id
-        //         );
-        //     }
-
-        //     return res.status(200).json({
-        //         message: "Refund webhook processed",
-        //     });
-        // }
-
 
 if (event.event?.startsWith("refund.")) {
     const refund = event.payload?.refund?.entity;
@@ -639,7 +316,6 @@ if (event.event?.startsWith("refund.")) {
         });
     }
 
-    // Determine the latest refund state from the event.
     let refundStatus = "processing";
 
     if (
@@ -654,7 +330,6 @@ if (event.event?.startsWith("refund.")) {
         refundStatus = "processed";
     }
 
-    // Find the related booking.
     let booking = await Booking.findOne({
         razorpayPaymentId: refund.payment_id,
     });
@@ -680,7 +355,6 @@ if (event.event?.startsWith("refund.")) {
         });
     }
 
-    // This implementation supports full refunds only.
     const expectedAmount = Math.round(
         Number(booking.totalPrice) * 100
     );
@@ -696,7 +370,6 @@ if (event.event?.startsWith("refund.")) {
         });
     }
 
-    // Prevent a different refund from overwriting this booking's refund.
     if (
         booking.razorpayRefundId &&
         booking.razorpayRefundId !== refund.id
@@ -711,9 +384,6 @@ if (event.event?.startsWith("refund.")) {
         });
     }
 
-    // ==========================================
-    // STAY BOOKING REFUND
-    // ==========================================
 
     if (bookingType === "stay") {
         const filter = {
@@ -725,7 +395,6 @@ if (event.event?.startsWith("refund.")) {
             ],
         };
 
-        // Prevent older events from downgrading a terminal state.
         if (refundStatus === "processing") {
             filter.refundStatus = {
                 $nin: ["processed", "failed"],
@@ -754,14 +423,9 @@ if (event.event?.startsWith("refund.")) {
         await Booking.updateOne(filter, update);
     }
 
-    // ==========================================
-    // EXPERIENCE BOOKING REFUND
-    // ==========================================
 
     if (bookingType === "experience") {
 
-        // For a completed refund, restore spots and cancel
-        // the booking in the same MongoDB transaction.
         if (refundStatus === "processed") {
             const session = await mongoose.startSession();
 
@@ -788,18 +452,14 @@ if (event.event?.startsWith("refund.")) {
                         );
                     }
 
-                    // Never downgrade a failed refund.
                     if (latestBooking.refundStatus === "failed") {
                         return;
                     }
 
-                    // Always update refund details.
                     latestBooking.refundStatus = "processed";
                     latestBooking.razorpayRefundId = refund.id;
                     latestBooking.paymentStatus = "refunded";
 
-                    // If cancellation already restored the spots,
-                    // do not restore them a second time.
                     if (latestBooking.status !== "cancelled") {
 
                         if (latestBooking.status !== "confirmed") {
@@ -828,7 +488,6 @@ if (event.event?.startsWith("refund.")) {
                             );
                         }
 
-                        // Restore spots exactly once.
                         slot.spotsLeft += latestBooking.participants;
 
                         if (slot.spotsLeft > slot.totalSpots) {
@@ -850,8 +509,6 @@ if (event.event?.startsWith("refund.")) {
             }
 
         } else {
-            // For refund.created or refund.failed, update the
-            // refund information without restoring any spots.
             const filter = {
                 _id: booking._id,
                 razorpayPaymentId: refund.payment_id,
@@ -889,7 +546,6 @@ if (event.event?.startsWith("refund.")) {
 }
 
 
-        // 5. Get payment entity for payment events
         const payment = event.payload?.payment?.entity;
 
         if (!payment) {
@@ -898,10 +554,8 @@ if (event.event?.startsWith("refund.")) {
             });
         }
 
-        // 6. Handle successful payment
         if (event.event === "payment.captured") {
 
-            // First check stay bookings
             const booking = await Booking.findOne({
                 razorpayOrderId: payment.order_id,
             });
@@ -956,7 +610,6 @@ if (event.event?.startsWith("refund.")) {
                 });
             }
 
-            // If not a stay booking, check experience bookings
             const experienceBooking =
                 await ExperienceBooking.findOne({
                     razorpayOrderId: payment.order_id,
@@ -992,7 +645,6 @@ if (event.event?.startsWith("refund.")) {
                     });
                 }
 
-                // Atomic update prevents cancellation from being overwritten
                 await ExperienceBooking.findOneAndUpdate(
                     {
                         _id: experienceBooking._id,
@@ -1019,10 +671,8 @@ if (event.event?.startsWith("refund.")) {
             }
         }
 
-        // 7. Handle failed payment
         if (event.event === "payment.failed") {
 
-            // First check stay bookings
             const booking = await Booking.findOne({
                 razorpayOrderId: payment.order_id,
             });
@@ -1046,7 +696,6 @@ if (event.event?.startsWith("refund.")) {
                 });
             }
 
-            // Check experience bookings
             const experienceBooking =
                 await ExperienceBooking.findOne({
                     razorpayOrderId: payment.order_id,
@@ -1091,31 +740,3 @@ module.exports = {
     verifyPayment,
     webhook,
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

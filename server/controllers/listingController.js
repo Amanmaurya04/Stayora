@@ -2,19 +2,14 @@ const Listing = require("../models/listingModel");
 const User = require("../models/userModel");
 const cloudinary = require("../config/cloudinary");
 
-
-
-
 const createListing = async (req, res) => {
     try {
-        // 1. Check if images were uploaded
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({
                 message: "At least one image is required",
             });
         }
 
-        // 2. Upload all images to Cloudinary
         const cloudinaryUrls = [];
 
         for (const file of req.files) {
@@ -40,7 +35,6 @@ const createListing = async (req, res) => {
             cloudinaryUrls.push(result.secure_url);
         }
 
-        // 3. Get normal form fields
         const {
             title,
             description,
@@ -59,7 +53,6 @@ const createListing = async (req, res) => {
             houseRules,
         } = req.body;
 
-        // 4. Create Listing object
         const listing = new Listing({
             host: req.user.id,
 
@@ -92,15 +85,12 @@ const createListing = async (req, res) => {
                 : [houseRules].filter(Boolean),
         });
 
-        // 5. Save listing to MongoDB
         await listing.save();
 
-        // 6. Automatically make the user a host
         await User.findByIdAndUpdate(req.user.id, {
             $set: { isHost: true },
         });
 
-        // 7. Send response
         return res.status(201).json({
             message: "Listing created successfully",
             listing,
@@ -115,10 +105,6 @@ const createListing = async (req, res) => {
         });
     }
 };
-
-
-
-
 
 const allListings = async (req, res) => {
   try {
@@ -276,16 +262,6 @@ const getPublicIdFromCloudinaryUrl = (imageUrl) => {
     return publicId;
 }; 
 
-
-
-
-
-
-
-
-
-
-
 const editListing = async (req, res) => {
     const uploadedPublicIds = [];
     let databaseSaved = false;
@@ -293,14 +269,12 @@ const editListing = async (req, res) => {
     try {
         const listing = req.listing;
 
-        // 1. Get existing images the host wants to keep
         let existingImages = req.body.existingImages || [];
 
         if (!Array.isArray(existingImages)) {
             existingImages = [existingImages];
         }
 
-        // 2. Verify that retained images belong to this listing
         const validImages = existingImages.every((image) =>
             listing.images.includes(image)
         );
@@ -311,7 +285,6 @@ const editListing = async (req, res) => {
             });
         }
 
-        // 3. Validate image count BEFORE uploading
         const totalImages =
             existingImages.length + (req.files?.length || 0);
 
@@ -321,7 +294,6 @@ const editListing = async (req, res) => {
             });
         }
 
-        // 4. Upload new images to Cloudinary
         const newImageUrls = [];
 
         if (req.files && req.files.length > 0) {
@@ -348,18 +320,15 @@ const editListing = async (req, res) => {
             } 
         }
 
-        // 5. Combine retained images and newly uploaded images
         const finalImages = [
             ...existingImages,
             ...newImageUrls,
         ];
 
-        // 6. Find images that the host removed
         const removedImages = listing.images.filter(
             (oldImage) => !finalImages.includes(oldImage) 
         );
 
-        // 7. Get listing fields from request
         const {
             title,
             description,
@@ -378,7 +347,6 @@ const editListing = async (req, res) => {
             longitude,
         } = req.body;
 
-        // 8. Update basic fields
         if (title !== undefined) listing.title = title;
         if (description !== undefined) listing.description = description;
         if (propertyType !== undefined) listing.propertyType = propertyType;
@@ -396,7 +364,6 @@ const editListing = async (req, res) => {
             listing.bedrooms = Number(bedrooms);
         }
 
-        // 9. Update location
         if (address !== undefined) listing.location.address = address;
         if (city !== undefined) listing.location.city = city;
         if (state !== undefined) listing.location.state = state;
@@ -410,7 +377,6 @@ const editListing = async (req, res) => {
             listing.location.longitude = Number(longitude);
         }
 
-        // 10. Update arrays
         if (amenities !== undefined) {
             listing.amenities = Array.isArray(amenities)
                 ? amenities
@@ -423,15 +389,12 @@ const editListing = async (req, res) => {
                 : [houseRules];
         }
 
-        // 11. Update images
         listing.images = finalImages;
 
-        // 12. Save listing in MongoDB
         await listing.save();
 
         databaseSaved = true;
 
-        // 13. Delete removed images from Cloudinary
         for (const imageUrl of removedImages) {
             try {
                 const url = new URL(imageUrl);
@@ -443,10 +406,8 @@ const editListing = async (req, res) => {
                     uploadIndex + "/upload/".length
                 );
 
-                // Remove Cloudinary version
                 publicId = publicId.replace(/^v\d+\//, "");
 
-                // Remove file extension
                 publicId = publicId.replace(/\.[^/.]+$/, "");
 
                 await cloudinary.uploader.destroy(publicId);
@@ -467,7 +428,6 @@ const editListing = async (req, res) => {
     } catch (error) {
         console.log("Edit listing error:", error);
 
-        // If MongoDB save failed, clean up newly uploaded images
         if (!databaseSaved && uploadedPublicIds.length > 0) {
             await Promise.allSettled(
                 uploadedPublicIds.map((publicId) =>
@@ -481,10 +441,6 @@ const editListing = async (req, res) => {
         });
     }
 };
-
-
-
-
 
 const deleteListing = async (req, res, next) => {
   try {

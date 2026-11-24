@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require("multer");
 const upload = require("../middleware/upload")
 
-// const {createExperience , allExperiences, getExperience} = require("../controllers/experienceController");
 const {createExperience , allExperiences, getExperience, editExperience} = require("../controllers/experienceController");
 
 const authMiddleware = require("../middleware/authMiddleware");

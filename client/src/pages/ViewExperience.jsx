@@ -40,22 +40,16 @@ const loadRazorpay = () => {
     });
 };
 
-
-
-
 function ViewExperience() {
     const navigate = useNavigate();
     const { experienceId } = useParams();
     const { user } = useAuth();
-
-   
 
     const [experience, setExperience] = useState(null);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    // Reviews
     const [reviews, setReviews] = useState([]);
     const [reviewsLoading, setReviewsLoading] = useState(true);
 
@@ -67,18 +61,15 @@ function ViewExperience() {
 
     const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
-    // Experience booking
     const [participants, setParticipants] = useState(1);
     const [slot, setSlot] = useState("");
     const [bookingLoading, setBookingLoading] = useState(false);
     const [bookingError, setBookingError] = useState("");
     const [bookingMessage, setBookingMessage] = useState("");
 
-    // Image experience-gallery
     const [selectedImage, setSelectedImage] = useState(0);
     const [showAllPhotos, setShowAllPhotos] = useState(false);
 
-    // Share
     const [copied, setCopied] = useState(false);
 
     const images = Array.isArray(experience?.images)
@@ -96,8 +87,6 @@ function ViewExperience() {
         .filter(Boolean)
         .join(", ");
 
-   
-
 const hostId =
     experience?.host?._id?.toString() ||
     experience?.host?.id?.toString() ||
@@ -111,7 +100,6 @@ const isOwner = Boolean(
     currentUserId === hostId
 );
 
-    // FETCH EXPERIENCE REVIEWS
     const fetchReviews = async (id) => {
         try {
             setReviewsLoading(true);
@@ -119,7 +107,6 @@ const isOwner = Boolean(
 
             const { data } = await getExperienceReviews(id);
 
-            // Backend returns { allReviews, reviewCount }
             setReviews(
                 Array.isArray(data.allReviews)
                     ? data.allReviews
@@ -145,20 +132,17 @@ const isOwner = Boolean(
     };
 
 
-    // CREATE EXPERIENCE REVIEW
     const handleCreateReview = async (e) => {
         e.preventDefault();
 
         setReviewError("");
         setReviewMessage("");
 
-        // Check login
         if (!user) {
             setReviewError("Please login before writing a review.");
             return;
         }
 
-        // Check rating
         const rating = Number(ratings);
 
         if (
@@ -170,7 +154,6 @@ const isOwner = Boolean(
             return;
         }
 
-        // Check comment
         if (!reviewComment.trim()) {
             setReviewError("Please write a comment.");
             return;
@@ -186,14 +169,11 @@ const isOwner = Boolean(
 
             setReviewMessage("Review submitted successfully!");
 
-            // Reset form
             setRatings(0);
             setReviewComment("");
 
-            // Fetch updated reviews
             await fetchReviews(experienceId);
 
-            // Fetch updated average rating and review count
             await fetchExperience(experienceId, false);
 
         } catch (error) {
@@ -218,13 +198,11 @@ const isOwner = Boolean(
         setBookingMessage("");
 
         try {
-            // 1. Check login
             if (!user) {
                 setBookingError("Please login before booking.");
                 return;
             }
 
-            // 2. Validate selected slot
             if (!slot) {
                 setBookingError("Please select a date and time slot.");
                 return;
@@ -253,7 +231,6 @@ const isOwner = Boolean(
 
             setBookingLoading(true);
 
-            // 3. Create experience booking
             const bookingResponse = await createExperienceBooking({
                 experienceId: experienceId,
                 slotId: slot,
@@ -262,7 +239,6 @@ const isOwner = Boolean(
 
             const bookingId = bookingResponse.data.booking._id;
 
-            // 4. Create Razorpay order
             const orderResponse = await createExperiencePaymentOrder(bookingId);
 
             const {
@@ -272,7 +248,6 @@ const isOwner = Boolean(
                 key,
             } = orderResponse.data;
 
-            // 5. Load Razorpay checkout
             const isLoaded = await loadRazorpay();
 
             if (!isLoaded) {
@@ -280,7 +255,6 @@ const isOwner = Boolean(
                 return;
             }
 
-            // 6. Open Razorpay
             const options = {
                 key,
                 amount,
@@ -291,7 +265,6 @@ const isOwner = Boolean(
 
                 handler: async function (paymentResponse) {
                     try {
-                        // 7. Verify payment on backend
                         const verificationResponse = await verifyExperiencePayment({
                             bookingId,
                             razorpay_order_id: paymentResponse.razorpay_order_id,
@@ -303,7 +276,6 @@ const isOwner = Boolean(
                             "Payment successful! Your experience is confirmed."
                         );
 
-                        // Refresh available spots
                         await fetchExperience(experienceId, false);
 
                         setSlot("");
@@ -367,7 +339,6 @@ const isOwner = Boolean(
     };
 
 
-    // FETCH EXPERIENCE DETAILS
     const fetchExperience = async (id, showLoader = true) => {
         try {
             if (showLoader) {
@@ -399,7 +370,6 @@ const isOwner = Boolean(
     };
 
 
-    // LOAD EXPERIENCE AND REVIEWS
     useEffect(() => {
         if (!experienceId) {
             setError("Experience id is missing");
@@ -414,7 +384,6 @@ const isOwner = Boolean(
     }, [experienceId]);
 
 
-    // PHOTO MODAL KEYBOARD CONTROLS
     useEffect(() => {
         if (!showAllPhotos) return;
 
@@ -450,7 +419,6 @@ const isOwner = Boolean(
     }, [showAllPhotos, images.length]);
 
 
-    // SHARE EXPERIENCE
     const handleShare = async () => {
         const url = window.location.href;
 
@@ -479,7 +447,6 @@ const isOwner = Boolean(
     };
 
 
-    // LOADING SCREEN
     if (loading) {
         return (
             <div className="experience-status">
@@ -500,7 +467,6 @@ const isOwner = Boolean(
     }
 
 
-    // ERROR SCREEN
     if (error || !experience) {
         return (
             <div className="experience-status">
@@ -521,13 +487,10 @@ const isOwner = Boolean(
     }
 
 
-    // Keep only slots that haven't started yet
     const isUpcoming = (item) => {
         const slotDate = new Date(item.date);
         if (isNaN(slotDate)) return false;
 
-        // If startTime is "HH:mm", compare with the exact time.
-        // Otherwise keep the slot until the end of its day.
         const match = /^(\d{1,2}):(\d{2})$/.exec(item.startTime || "");
 
         if (match) {
@@ -550,7 +513,6 @@ const isOwner = Boolean(
         <div className="experience-page">
             <main className="experience-container">
 
-                {/* TOP BAR */}
 
                 <div className="experience-top-bar">
 
@@ -561,29 +523,6 @@ const isOwner = Boolean(
                         ← Back to experiences
                     </Link>
 
-                    {/* <div className="experience-share-box">
-                        <button
-                            type="button"
-                            onClick={handleShare}
-                            className="experience-share-button"
-                        >
-                            ↗ {copied ? "Copied" : "Share"}
-                        </button>
-{isOwner && (
-    <button
-        type="button"
-        className="share-btn"
-        onClick={() => navigate(`/experiences/${experience._id}/edit`)}
-    >
-        Edit
-    </button>
-)}
-
-
-
-
-
-                    </div> */}
 
 <div className="experience-share-box">
 
@@ -607,12 +546,7 @@ const isOwner = Boolean(
 
 </div>
 
-
-
                 </div>
-
-
-                {/* EXPERIENCE HEADING */}
 
                 <section className="experience-heading">
                     <div>
@@ -658,9 +592,6 @@ const isOwner = Boolean(
                     </div>
                 </section>
 
-
-                {/* IMAGE GALLERY */}
-
                 {images.length > 0 ? (
                     <section className="experience-gallery">
 
@@ -682,9 +613,6 @@ const isOwner = Boolean(
                             </button>
                         </div>
 
-
-                        {/* SIDE IMAGES */}
-
                         <div className="experience-gallery-thumbnails">
 
                             {images.slice(1, 5).map((image, index) => (
@@ -702,9 +630,6 @@ const isOwner = Boolean(
                                     />
                                 </button>
                             ))}
-
-
-                            {/* VIEW ALL PHOTOS */}
 
                             {images.length > 1 && (
                                 <button
@@ -727,9 +652,6 @@ const isOwner = Boolean(
                         No image available
                     </div>
                 )}
-
-
-                {/* PHOTO VIEWER MODAL */}
 
                 {showAllPhotos && images.length > 0 && (
                     <div
@@ -795,15 +717,9 @@ const isOwner = Boolean(
                     </div>
                 )}
 
-
-                {/* MAIN CONTENT */}
-
                 <div className="experience-content-grid">
 
                     <div className="experience-main-column">
-
-
-                        {/* SCHEDULE DETAILS */}
 
                         <section className="experience-section">
 
@@ -838,9 +754,6 @@ const isOwner = Boolean(
 
                         </section>
 
-
-                        {/* ABOUT */}
-
                         <section className="experience-section">
 
                             <h2>About this experience</h2>
@@ -851,9 +764,6 @@ const isOwner = Boolean(
 
                         </section>
 
-
-                        {/* CATEGORY */}
-
                         <section className="experience-section">
 
                             <h2>Category</h2>
@@ -863,9 +773,6 @@ const isOwner = Boolean(
                             </p>
 
                         </section>
-
-
-                        {/* LOCATION */}
 
                         <section className="experience-section">
 
@@ -895,9 +802,6 @@ const isOwner = Boolean(
 
                         </section>
 
-
-                        {/* REVIEWS */}
-
                         <section className="experience-section experience-reviews-section">
 
                             <div className="experience-reviews-heading">
@@ -919,9 +823,6 @@ const isOwner = Boolean(
                                 </h2>
 
                             </div>
-
-
-                            {/* REVIEW LOADING */}
 
                             {reviewsLoading ? (
 
@@ -996,9 +897,6 @@ const isOwner = Boolean(
 
                                                 </div>
 
-
-                                                {/* REVIEW RATING */}
-
                                                 <div className="experience-review-ratings">
                                                     <span>
                                                         {"★".repeat(
@@ -1023,9 +921,6 @@ const isOwner = Boolean(
                                                     </span>
                                                 </div>
 
-
-                                                {/* REVIEW COMMENT */}
-
                                                 <p className="experience-review-comment">
                                                     {review.comment}
                                                 </p>
@@ -1045,16 +940,12 @@ const isOwner = Boolean(
 
                         </section>
 
-
-                        {/* CREATE REVIEW */}
-
                         <section className="experience-create-review">
 
                             <h2>Write a review</h2>
 
                             <form onSubmit={handleCreateReview}>
 
-                                {/* RATING STARS */}
 
                                 <div className="experience-rating-stars">
 
@@ -1079,9 +970,6 @@ const isOwner = Boolean(
 
                                 </div>
 
-
-                                {/* COMMENT */}
-
                                 <label htmlFor="reviewComment">
                                     Your experience
                                 </label>
@@ -1098,26 +986,17 @@ const isOwner = Boolean(
                                     required
                                 />
 
-
-                                {/* ERROR MESSAGE */}
-
                                 {reviewError && (
                                     <p className="experience-form-error">
                                         {reviewError}
                                     </p>
                                 )}
 
-
-                                {/* SUCCESS MESSAGE */}
-
                                 {reviewMessage && (
                                     <p className="experience-form-success">
                                         {reviewMessage}
                                     </p>
                                 )}
-
-
-                                {/* SUBMIT BUTTON */}
 
                                 <button
                                     type="submit"
@@ -1138,7 +1017,6 @@ const isOwner = Boolean(
 
                 <aside>
 
-                    {/* EXPERIENCE BOOKING */}
 
                     <section className="experience-section experience-booking-card">
 

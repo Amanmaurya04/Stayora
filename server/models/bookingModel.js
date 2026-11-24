@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const bookingSchema = new mongoose.Schema(
@@ -95,7 +94,6 @@ razorpayRefundId: {
     }
 );
 
-// Helps availability queries; it does not prevent booking races.
 bookingSchema.index({
     listing: 1,
     status: 1,
@@ -116,28 +114,3 @@ bookingSchema.index(
 const Booking = mongoose.model("Booking", bookingSchema);
 
 module.exports = Booking;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

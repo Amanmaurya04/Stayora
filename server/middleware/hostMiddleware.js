@@ -14,9 +14,6 @@ console.log("Host middleware:");
 console.log("User ID:", user._id);
 console.log("isHost:", user.isHost);
 
-
-
-
         if (!user.isHost) {
             return res.status(403).json({
                 message: "Only host can perform this action"
@@ -33,7 +30,5 @@ console.log("isHost:", user.isHost);
         });
     }
 };
-
-
 
 module.exports = hostMiddleware;
