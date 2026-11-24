@@ -1,0 +1,386 @@
+
+.container {
+    height: 100%;
+}
+
+.head{
+    color: gray;
+}
+
+.inp:hover{
+    border-color: #222;
+}
+.inp:focus{
+    border-color: #222;
+    box-shadow: 0 0 0 1px #222;
+    outline: none;
+}
+
+
+/* Property type grid */
+.options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+}
+
+/* Room type list (one card per row) */
+.options-2 {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+/* Shared button style */
+.type-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.type-btn .icon {
+    font-size: 28px;
+    display: flex;
+}
+
+.type-btn:hover {
+    border-color: #222;
+}
+
+.type-btn.active {
+    border-color: #222;
+    box-shadow: 0 0 0 1px #222;
+    background: #f7f7f7;
+}
+
+/* Room type buttons: full width, text on the left */
+.options-2 .type-btn {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+}
+
+@media (max-width: 620px) {
+    .options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+
+.inpu::placeholder{
+    font-size: 15px;
+}
+
+
+.img-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+    padding: 40px 20px;
+    border: 2px dashed #ddd;
+    border-radius: 16px;
+    background: #f7f7f7;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.img-box:hover {
+    border-color: #222;
+}
+
+.img-icon {
+    font-size: 40px;
+}
+
+.img-btn {
+    margin-top: 10px;
+    padding: 10px 18px;
+    border: 1px solid #222;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+
+
+.image-preview{
+    padding: 20px;
+    display: grid;
+    flex-direction:row;
+     grid-template-columns: repeat(2, 2fr);
+} 
+
+
+
+.image-preview-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.image-preview {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f7f7f7;
+}
+
+
+.image-preview:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+    aspect-ratio: auto;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    color: #222;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.1s;
+}
+
+.remove-btn:hover {
+    transform: scale(1.08);
+}
+
+.cover-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+@media (max-width: 520px) {
+    .image-preview-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+
+.price {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 280px;
+    padding: 0 16px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+}
+
+.price:hover {
+    border-color: #222;
+}
+
+.price:focus-within {
+    border-color: #222;
+    box-shadow: 0 0 0 2px #222;
+}
+
+.price span {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.price input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    box-shadow: none !important;
+    background: transparent;
+    font-size: 28px;
+    font-weight: 700;
+    padding: 14px 0;
+}
+
+.price em {
+    font-style: normal;
+    color: #6a6a6a;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.mb-container{
+    display: grid;
+    grid-template-columns: repeat(2 , 1fr);
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.mb-input{
+    height: 50px;
+}
+
+.amenity-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.amenity-box {
+    border: 1px solid #ddd;
+    margin: 8px;
+    border-radius: 10px;
+}
+
+.amenity-box:hover {
+    border-color: #222;
+}
+
+
+.amenity-box:has(input:checked) {
+    border-color: #222;
+    box-shadow: 0 0 0 2px #222;
+}
+
+
+.amenity-box label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.amenity-box input {
+    accent-color: #222;
+}
+
+
+.rules-container{
+    display: grid;
+    grid-template-columns: repeat( 1 ,1 fr);
+     margin-bottom: 150px;
+}
+
+
+.rule-box{
+border: 1px solid #ddd;
+margin: 7px;
+border-radius: 10px;
+}
+
+.rule-box:hover{
+     border-color: #222;
+}
+
+.rule-box:has(input:checked){
+     border-color: #222;
+    box-shadow: 0 0 0 2px #222;
+}
+
+
+.rule-box label{
+    padding:15px;
+    cursor: pointer;
+    gap: 12px;
+display: flex;
+justify-content: space-between;
+}
+
+.rule-box input{
+    accent-color: #222;
+}
+
+
+/* .footer-container{
+    height: 100px;
+    width: 100vw;
+    border: 1px solid #ddd;
+  
+} */
+
+
+
+
+
+.footer-container {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    padding: 16px 24px;
+    z-index: 10;
+}
+
+.footer-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.submit-btn {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    /* background: linear-gradient(90deg, #e61e4d, #d70466); */
+    background: #ff385c;;
+    border: 0;
+    border-radius: 10px;
+    padding: 14px 28px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.submit-btn:hover {
+    background: #c42443;
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
+}
+
+
+
+
+
+.error-text {
+    color: #c13515;
+    font-size: 14px;
+    margin: 6px 0 0;
+}

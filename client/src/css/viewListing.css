@@ -1,0 +1,1341 @@
+/* =========================================================
+   VIEW LISTING: consolidated stylesheet
+   - one rule per class (no duplicates / overrides)
+   - every class here is used in ViewListing.jsx
+   ========================================================= */
+
+.page {
+    --ink: #222;
+    --muted: #666;
+    --line: #e5e5e5;
+    --star: #f59e0b;
+    --danger: #b42318;
+    --success: #18794e;
+
+    min-height: 100vh;
+    background: #fff;
+    color: var(--ink);
+}
+
+.page *,
+.page *::before,
+.page *::after {
+    box-sizing: border-box;
+}
+
+.container {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 28px 0 70px;
+}
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+}
+
+.back-btn:hover {
+    color: var(--ink);
+    opacity: 0.7;
+}
+
+.share-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.share-btn {
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.share-btn:hover {
+    background: #f7f7f7;
+    border-color: #bbb;
+}
+
+/* =========================================================
+   LISTING HEADING
+   ========================================================= */
+
+.l-heading {
+    margin-bottom: 20px;
+}
+
+.l-title {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.6px;
+    overflow-wrap: anywhere;
+}
+
+.l-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: #555;
+    font-size: 14px;
+}
+
+/* =========================================================
+   IMAGE GALLERY
+   ========================================================= */
+
+.gallery {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 8px;
+    height: clamp(380px, 38vw, 500px);
+    margin-bottom: 45px;
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+/* only one photo: no empty right column */
+.gallery:has(.gallery-side:empty) {
+    grid-template-columns: 1fr;
+}
+
+.gallery-side:empty {
+    display: none;
+}
+
+.gallery-main {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.gallery-main button,
+.gallery-side button {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: #f2f2f2;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.gallery-main img,
+.gallery-side img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.gallery-main button:hover img,
+.gallery-side button:hover img {
+    transform: scale(1.025);
+}
+
+.gallery-side {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.gallery-side .see-all {
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+    z-index: 5;
+    width: auto;
+    height: auto;
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid var(--ink);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.gallery-side .see-all:hover {
+    background: #f7f7f7;
+}
+
+.no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    margin-bottom: 45px;
+    border-radius: 18px;
+    background: #f3f3f3;
+    color: #777;
+    font-size: 16px;
+}
+
+/* =========================================================
+   CONTENT GRID
+   ========================================================= */
+
+.content-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 64px;
+    align-items: start;
+}
+
+.main-column {
+    min-width: 0;
+}
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.l-section {
+    padding: 34px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.l-section:first-child {
+    padding-top: 0;
+}
+
+.l-section h2 {
+    margin: 0 0 18px;
+    font-size: 23px;
+    line-height: 1.25;
+    font-weight: 600;
+}
+
+.property-heading h2 {
+    margin-bottom: 7px;
+}
+
+.property-heading p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.l-description {
+    margin: 0;
+    color: #444;
+    font-size: 16px;
+    line-height: 1.75;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+/* AMENITIES */
+
+.l-amenities {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+    row-gap: 18px;
+}
+
+.l-amenity {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    color: #333;
+    font-size: 15px;
+}
+
+.l-amenity > span:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    font-size: 12px;
+}
+
+/* LOCATION (display:flex added so it does not depend on Bootstrap's d-flex) */
+
+.location-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    background: #f8f8f8;
+    border-radius: 14px;
+}
+
+.location-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #fff;
+    font-size: 19px;
+}
+
+.location-box strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.location-box p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* HOUSE RULES */
+
+.l-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.l-rule {
+    display: flex;
+    gap: 12px;
+    color: #444;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.l-rule > span:first-child {
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.l-muted,
+.vl-muted {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+/* =========================================================
+   BOOKING CARD
+   ========================================================= */
+
+.booking-card {
+    position: sticky;
+    top: 24px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+    background: #fff;
+}
+
+.booking-price {
+    margin-bottom: 20px;
+}
+
+.booking-price strong {
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.booking-price span {
+    color: var(--muted);
+}
+
+.booking-fields {
+    display: grid;
+    gap: 14px;
+}
+
+.booking-fields label {
+    display: grid;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.booking-fields input,
+.booking-fields select {
+    width: 100%;
+    min-height: 44px;
+    padding: 9px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 400;
+}
+
+.booking-fields input:focus,
+.booking-fields select:focus {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+}
+
+.booking-breakdown {
+    margin-top: 20px;
+}
+
+.booking-breakdown p {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 12px;
+    color: #444;
+    font-size: 14px;
+}
+
+.booking-breakdown hr {
+    margin: 14px 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    opacity: 1;
+}
+
+.booking-breakdown .booking-total {
+    margin: 0;
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.booking-error,
+.booking-message {
+    margin: 14px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.booking-error {
+    color: var(--danger);
+}
+
+.booking-message {
+    color: var(--success);
+}
+
+.vl-primary-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 10px;
+    /* background: var(--ink); */
+    background: #ff385c;
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.vl-primary-btn:hover {
+    background: #f4d4db;
+    
+    color: #fff;
+}
+
+.vl-primary-btn:active {
+    transform: scale(0.985);
+}
+
+.booking-submit {
+    margin-top: 16px;
+}
+
+.booking-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.booking-note {
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+/* =========================================================
+   REVIEWS
+   ========================================================= */
+
+.l-reviews-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.l-reviews-heading h2 {
+    margin-bottom: 0;
+}
+
+.review-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.vl-review-card {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background:#fff;
+    overflow-wrap: anywhere;
+}
+
+/* card in edit mode takes the full row so the form has room */
+.vl-review-card:has(form) {
+    grid-column: 1 / -1;
+}
+
+.vl-review-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.vl-review-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #eee;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.vl-review-user-info {
+    min-width: 0;
+}
+
+.vl-review-user-info h3 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.vl-review-user-info p {
+    margin: 0;
+    color: #777;
+    font-size: 12px;
+}
+
+.vl-review-ratings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 18px;
+    margin-bottom: 18px;
+    padding: 16px 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.vl-rating-category {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.vl-rating-category span {
+    color: #555;
+}
+
+.vl-rating-category strong {
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.vl-review-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.vl-review-rating span {
+    color: var(--star);
+    letter-spacing: 1px;
+    font-size: 14px;
+}
+
+.vl-review-rating strong {
+    font-size: 13px;
+}
+
+.vl-review-comment {
+    margin: 0;
+    color: #444;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+/* Edit button (direct child of the card, so star buttons are not affected) */
+
+.vl-review-card > button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 14px;
+    padding: 8px 16px;
+    
+    border: 1px solid rgb(223, 220, 220);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.vl-review-card button:hover {
+    background: #ff385c;;
+    color: #fff;
+}
+
+.vl-review-card > button:active {
+    transform: scale(0.97);
+}
+
+/* Host reply */
+
+.vl-host-reply {
+    margin-top: 16px;
+    padding: 15px;
+    background: #f7f7f7;
+    border-radius: 10px;
+}
+
+.vl-host-reply strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.vl-host-reply p {
+    margin: 0;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.reviews-loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 25px 0;
+    color: #777;
+}
+
+.reviews-loading p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.no-reviews {
+    padding: 10px 0 20px;
+}
+
+.no-reviews h3 {
+    margin: 0 0 7px;
+    font-size: 17px;
+}
+
+.no-reviews p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+/* =========================================================
+   REVIEW FORMS (create + edit share the same styling)
+   ========================================================= */
+
+.create-review {
+    margin: 32px 0;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+}
+
+.create-review h2 {
+    margin: 0 0 20px;
+    font-size: 23px;
+    font-weight: 600;
+}
+
+.vl-review-card form h3 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.rating-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 4px;
+}
+
+.rating-star {
+    padding: 0 2px;
+    border: 0;
+    background: none;
+    color: #ccc;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.rating-star:hover {
+    transform: scale(1.15);
+}
+
+.rating-star.active {
+    color: var(--star);
+}
+
+.rating-star:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.create-review label,
+.vl-review-card form label {
+    display: block;
+    margin: 20px 0 8px;
+    font-weight: 600;
+}
+
+.create-review textarea,
+.vl-review-card form textarea {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font: inherit;
+    resize: vertical;
+}
+
+.create-review textarea:focus,
+.vl-review-card form textarea:focus {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+}
+
+.create-review button[type="submit"],
+.vl-review-card form button[type="submit"] {
+    padding: 12px 20px;
+    border: 0;
+    border-radius: 8px;
+    background: #ff385c;
+    /* background: var(--ink); */
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.create-review button[type="submit"] {
+    margin-top: 16px;
+}
+
+.create-review button[type="submit"]:hover,
+.vl-review-card form button[type="submit"]:hover {
+    background: #f9cad3;
+}
+
+.create-review button[type="submit"]:disabled,
+.vl-review-card form button[type="submit"]:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Save / Cancel row in edit form (the wrapper div has no class in the JSX) */
+
+.vl-review-card form > div:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.vl-review-card form > div:last-child button[type="button"] {
+    padding: 12px 20px;
+    border: 1px solid var(--ink);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.vl-review-card form > div:last-child button[type="button"]:hover {
+    background: #f3f3f3;
+    /* background: #ff385c; */
+}
+
+.vl-review-card form > div:last-child button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.review-error,
+.review-success {
+    margin: 14px 0 0;
+    font-size: 14px;
+}
+
+.review-error {
+    color: var(--danger);
+}
+
+.review-success {
+    color: var(--success);
+}
+
+/* =========================================================
+   HOST
+   ========================================================= */
+
+.vl-section {
+    padding: 34px 0 0;
+}
+
+.vl-section h2 {
+    margin: 0 0 18px;
+    font-size: 23px;
+    font-weight: 600;
+}
+
+.vl-host-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+}
+
+.vl-host-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #eee;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.vl-host-card h3 {
+    margin: 0 0 5px;
+    font-size: 18px;
+}
+
+.vl-host-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   LOADING / ERROR
+   ========================================================= */
+
+.status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 40px 20px;
+    background: #fff;
+}
+
+.status > div {
+    text-align: center;
+}
+
+.status .d-flex {
+    gap: 12px;
+}
+
+.status p {
+    margin: 16px 0;
+    color: var(--muted);
+}
+
+.status .d-flex p {
+    margin: 0;
+}
+
+/* =========================================================
+   FULL SCREEN PHOTO MODAL
+   ========================================================= */
+
+.vl-photo-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.96);
+    color: #fff;
+}
+
+.vl-photo-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 70px;
+    padding: 0 25px;
+}
+
+.vl-photo-modal-header button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.vl-photo-modal-header button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.vl-photo-modal-header span {
+    font-size: 14px;
+}
+
+.vl-photo-modal-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 0;
+    padding: 20px 30px 40px;
+}
+
+.vl-photo-modal-body img {
+    display: block;
+    max-width: calc(100% - 140px);
+    max-height: calc(100vh - 140px);
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.vl-photo-modal-body > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 38px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.vl-photo-modal-body > button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.vl-photo-modal-body > button:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   TABLET  (one breakpoint for the layout change)
+   ========================================================= */
+
+@media (max-width: 1000px) {
+    .container {
+        width: min(100% - 30px, 900px);
+    }
+
+    .gallery {
+        height: clamp(320px, 50vw, 420px);
+    }
+
+    .content-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 30px;
+    }
+
+    .booking-card {
+        position: static;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+    .container {
+        width: calc(100% - 24px);
+        padding-top: 18px;
+    }
+
+    .top-bar {
+        margin-bottom: 18px;
+    }
+
+    .l-title {
+        font-size: 27px;
+    }
+
+    .l-meta {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .gallery {
+        display: block;
+        height: 300px;
+        margin-left: -12px;
+        margin-right: -12px;
+        border-radius: 0;
+    }
+
+    .gallery-main {
+        width: 100%;
+        height: 100%;
+    }
+
+    .gallery-side {
+        display: none;
+    }
+
+    .no-image {
+        height: 280px;
+        margin-left: -12px;
+        margin-right: -12px;
+        border-radius: 0;
+    }
+
+    .l-section {
+        padding: 28px 0;
+    }
+
+    .l-section h2,
+    .vl-section h2,
+    .create-review h2 {
+        font-size: 21px;
+    }
+
+    .l-amenities {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .booking-card {
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: none;
+    }
+
+    .review-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .vl-review-card {
+        padding: 18px;
+    }
+
+    .create-review {
+        padding: 18px;
+    }
+
+    .location-box {
+        padding: 16px;
+    }
+
+    .vl-photo-modal-header {
+        min-height: 60px;
+        padding: 0 15px;
+    }
+
+    .vl-photo-modal-body {
+        padding: 15px;
+        gap: 8px;
+    }
+
+    .vl-photo-modal-body img {
+        max-width: calc(100% - 80px);
+        max-height: calc(100vh - 110px);
+    }
+
+    .vl-photo-modal-body > button {
+        width: 38px;
+        height: 38px;
+        font-size: 28px;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+    .top-bar {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .back-btn {
+        font-size: 13px;
+    }
+
+    .share-btn {
+        padding: 7px 11px;
+        font-size: 13px;
+    }
+
+    .l-title {
+        font-size: 24px;
+    }
+
+    .gallery {
+        height: 260px;
+    }
+
+    .vl-review-ratings {
+        grid-template-columns: 1fr;
+    }
+
+    .rating-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .vl-photo-modal-body > button {
+        width: 34px;
+        height: 34px;
+        font-size: 25px;
+    }
+
+    .vl-photo-modal-body img {
+        max-width: calc(100% - 70px);
+    }
+
+    .vl-host-card {
+        align-items: flex-start;
+        padding: 16px;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE ENHANCEMENTS
+   ========================================================= */
+
+.page {
+    overflow-x: clip;
+}
+
+.l-section h2,
+.vl-section h2,
+.create-review h2 {
+    font-size: clamp(20px, 2.2vw, 23px);
+}
+
+/* mobile-only photo count button on the main image */
+.photo-count {
+    display: none;
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+/* small desktops: narrower booking column */
+@media (min-width: 1001px) and (max-width: 1200px) {
+    .content-grid {
+        grid-template-columns: minmax(0, 1fr) 330px;
+        gap: 40px;
+    }
+}
+
+/* tablets / large phones: booking fields in two columns */
+@media (min-width: 481px) and (max-width: 1000px) {
+    .booking-fields {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .booking-fields label:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 700px) {
+    .photo-count {
+        display: block;
+    }
+
+    .booking-card {
+        padding: 18px;
+    }
+
+    /* bigger touch targets */
+    .rating-star {
+        padding: 4px;
+        font-size: 30px;
+    }
+
+    .vl-review-card > button {
+        min-height: 40px;
+    }
+
+    .vl-review-card form > div:last-child button {
+        flex: 1;
+        min-height: 44px;
+    }
+
+    .create-review button[type="submit"] {
+        width: 100%;
+        min-height: 46px;
+    }
+
+    .l-meta {
+        gap: 6px;
+    }
+}
+
+
+
+/* no hover zoom on touch screens */
+@media (hover: none) {
+    .gallery-main button:hover img,
+    .gallery-side button:hover img {
+        transform: none;
+    }
+}
+
+/* photo modal: mobile browser toolbars, notches, landscape */
+.vl-photo-modal {
+    height: 100vh;
+    height: 100dvh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+        env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.vl-photo-modal-body img {
+    max-height: calc(100dvh - 140px);
+}
+
+@media (max-width: 700px) {
+    .vl-photo-modal-body img {
+        max-height: calc(100dvh - 110px);
+    }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .vl-photo-modal-header {
+        min-height: 48px;
+    }
+
+    .vl-photo-modal-body {
+        padding: 8px 15px;
+    }
+
+    .vl-photo-modal-body img {
+        max-height: calc(100dvh - 70px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page *,
+    .page *::before,
+    .page *::after {
+        transition: none !important;
+    }
+}

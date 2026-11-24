@@ -1,0 +1,538 @@
+
+/* ==============================
+   USER PROFILE DASHBOARD
+============================== */
+
+.user-dashboard {
+    width: min(1180px, 92%);
+    margin: 55px auto 90px;
+    color: #222222;
+    font-family: inherit;
+}
+
+.user-page-header {
+    margin-bottom: 30px;
+}
+
+.user-eyebrow {
+    color: #717171;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 9px;
+}
+
+.user-page-header h1 {
+    font-size: 34px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.user-page-header > div > p:last-child {
+    color: #717171;
+    font-size: 15px;
+}
+
+/* ==============================
+   PROFILE CARD
+============================== */
+
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding: 30px;
+    background: #ffffff;
+    border: 1px solid #ebebeb;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.035);
+    margin-bottom: 65px;
+}
+
+.profile-avatar {
+    width: 85px;
+    height: 85px;
+    min-width: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #222222;
+    color: white;
+    border-radius: 50%;
+    font-size: 34px;
+    font-weight: 600;
+}
+
+.profile-information h2 {
+    font-size: 23px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.profile-information > p {
+    color: #717171;
+    margin-bottom: 14px;
+}
+
+.profile-contact {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.profile-contact span {
+    color: #717171;
+}
+
+/* ==============================
+   BOOKING HEADING
+============================== */
+
+.bookings-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+.bookings-heading h2 {
+    font-size: 29px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.booking-count {
+    color: #717171;
+    font-size: 13px;
+}
+
+/* ==============================
+   BOOKING SECTIONS
+============================== */
+
+.booking-section {
+    margin-bottom: 65px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 23px;
+}
+
+.section-heading h3 {
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.section-heading p {
+    font-size: 13px;
+    color: #717171;
+    margin: 0;
+}
+
+.section-heading > span {
+    font-size: 12px;
+    color: #717171;
+    background: #f7f7f7;
+    padding: 8px 13px;
+    border-radius: 20px;
+}
+
+/* ==============================
+   BOOKING GRID
+============================== */
+
+.booking-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px;
+}
+
+.stay-booking-card {
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #ebebeb;
+    border-radius: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stay-booking-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+}
+
+/* ==============================
+   BOOKING IMAGE
+============================== */
+
+.booking-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 215px;
+    background: #f3f3f3;
+}
+
+.booking-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.booking-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f3f3;
+    color: #888888;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.booking-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 7px 13px;
+    border-radius: 20px;
+    background: white;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.status-confirmed {
+    color: #16834b;
+    background: #eaf7ef;
+}
+
+.status-cancelled {
+    color: #c0392b;
+    background: #fdecea;
+}
+
+.status-completed {
+    color: #2864a5;
+    background: #eaf2fb;
+}
+
+.status-pending {
+    color: #9a6800;
+    background: #fff5d9;
+}
+
+.status-default {
+    color: #555555;
+    background: #eeeeee;
+}
+
+/* ==============================
+   BOOKING CARD CONTENT
+============================== */
+
+.booking-card-content {
+    padding: 22px;
+}
+
+.booking-card-content h4 {
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.booking-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #717171;
+    font-size: 13px;
+    margin-bottom: 23px;
+}
+
+.booking-location span {
+    font-size: 17px;
+}
+
+.booking-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.booking-details div,
+.booking-payment-row div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.booking-details span,
+.booking-payment-row span,
+.experience-participants span {
+    font-size: 11px;
+    color: #717171;
+}
+
+.booking-details strong,
+.booking-payment-row strong,
+.experience-participants strong {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.booking-divider {
+    height: 1px;
+    background: #eeeeee;
+    margin: 20px 0;
+}
+
+.booking-payment-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.booking-price {
+    text-align: right;
+}
+
+.booking-price strong {
+    font-size: 17px;
+}
+
+.experience-participants {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 17px;
+}
+
+/* ==============================
+   REFUND INFORMATION
+============================== */
+
+.refund-information {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8f8f8;
+    border-radius: 9px;
+    padding: 12px;
+    margin-top: 18px;
+}
+
+.refund-information span {
+    color: #717171;
+    font-size: 12px;
+}
+
+.refund-information strong {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* ==============================
+   CANCEL BUTTON
+============================== */
+
+.cancel-booking-button {
+    width: 100%;
+    padding: 12px 16px;
+    margin-top: 22px;
+    background: white;
+    border: 1px solid #dddddd;
+    border-radius: 9px;
+    color: #c0392b;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancel-booking-button:hover:not(:disabled) {
+    background: #fff1ef;
+    border-color: #c0392b;
+}
+
+.cancel-booking-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cancelled-message {
+    text-align: center;
+    padding: 12px;
+    margin-top: 20px;
+    background: #f8f8f8;
+    border-radius: 9px;
+    color: #777777;
+    font-size: 12px;
+}
+
+/* ==============================
+   EMPTY BOOKING STATE
+============================== */
+
+.empty-bookings {
+    padding: 55px 20px;
+    text-align: center;
+    border: 1px dashed #dddddd;
+    border-radius: 15px;
+    background: #ffffff;
+}
+
+.empty-booking-icon {
+    font-size: 38px;
+    color: #444444;
+    margin-bottom: 13px;
+}
+
+.empty-bookings h4 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.empty-bookings p {
+    font-size: 13px;
+    color: #717171;
+    margin-bottom: 0;
+}
+
+/* ==============================
+   ALERTS
+============================== */
+
+.booking-alert {
+    padding: 14px 17px;
+    border-radius: 9px;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.booking-alert-success {
+    background: #eaf7ef;
+    color: #16834b;
+}
+
+.booking-alert-error {
+    background: #fdecea;
+    color: #c0392b;
+}
+
+/* ==============================
+   LOADING
+============================== */
+
+.profile-loading,
+.booking-loading {
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 13px;
+    color: #717171;
+}
+
+.profile-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #eeeeee;
+    border-top-color: #222222;
+    border-radius: 50%;
+    animation: profileSpin 0.8s linear infinite;
+}
+
+@keyframes profileSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.profile-error {
+    text-align: center;
+    margin: 100px auto;
+    color: #c0392b;
+}
+
+/* ==============================
+   RESPONSIVE DESIGN
+============================== */
+
+@media (max-width: 768px) {
+    .user-dashboard {
+        width: 92%;
+        margin-top: 35px;
+    }
+
+    .user-page-header h1 {
+        font-size: 28px;
+    }
+
+    .profile-card {
+        padding: 22px;
+        gap: 17px;
+        margin-bottom: 45px;
+    }
+
+    .profile-avatar {
+        width: 65px;
+        height: 65px;
+        min-width: 65px;
+        font-size: 27px;
+    }
+
+    .profile-information h2 {
+        font-size: 19px;
+    }
+
+    .bookings-heading h2 {
+        font-size: 25px;
+    }
+
+    .booking-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-image-wrapper {
+        height: 230px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-card {
+        align-items: flex-start;
+        padding: 18px;
+    }
+
+    .profile-contact {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .section-heading h3 {
+        font-size: 18px;
+    }
+
+    .section-heading p {
+        max-width: 220px;
+        line-height: 1.5;
+    }
+
+    .booking-card-content {
+        padding: 17px;
+    }
+
+    .booking-image-wrapper {
+        height: 195px;
+    }
+
+    .booking-details {
+        gap: 10px;
+    }
+}
