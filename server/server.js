@@ -1,3 +1,4 @@
+
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -14,29 +15,34 @@ const experienceBookingRoutes = require("./routes/experienceBookingRoutes");
 const experienceReviewRoutes = require("./routes/experienceReviewRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const experiencePaymentRoutes = require("./routes/experiencePaymentRoutes");
-const upload = require("./middleware/upload")
 
 const app = express();
-connectDb();
 
-app.use(cors());
+const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.CLIENT_URL
+].filter(Boolean);
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
 
 app.use(
     "/api/payments/webhook",
     express.raw({ type: "application/json" })
 );
 
-
 app.use(express.json());
 
 app.use("/api/payments", paymentRoutes);
 app.use("/api/experience-payments", experiencePaymentRoutes);
-app.use("/api/auth" , authRoutes);
-app.use("/api/listings" , listingRoutes);
-app.use("/api/bookings" , bookingRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/listings", listingRoutes);
+app.use("/api/bookings", bookingRoutes);
 app.use("/api/reviews", reviewRoutes);
-app.use("/api/user" ,userRoutes);
-app.use("/api/experiences" , experienceRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/experiences", experienceRoutes);
 app.use("/api/experience-bookings", experienceBookingRoutes);
 app.use("/api/reviews/experience", experienceReviewRoutes);
 
@@ -46,16 +52,26 @@ app.get("/test", (req, res) => {
     });
 });
 
-
-app.get("/" , (req , res) => {
+app.get("/", (req, res) => {
     res.json({
-        message:"Stayora API is running...",
+        message: "Stayora API is running..."
     });
 });
 
+const PORT = process.env.PORT || 8000;
 
-const PORT = process.env.PORT  || 8000; 
+const startServer = async () => {
+    try {
+        await connectDb();
 
-app.listen(PORT , () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+        app.listen(PORT, "0.0.0.0", () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+
+    } catch (error) {
+        console.error("Server startup failed:", error.message);
+        process.exit(1);
+    }
+};
+
+startServer();
