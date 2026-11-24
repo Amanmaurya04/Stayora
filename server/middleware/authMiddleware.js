@@ -6,7 +6,7 @@ const authMiddleware = (req, res, next) => {
 
     if (!authHeader) {
       return res.status(401).json({
-        message: "Authentictaion required",
+        message: "Authentication required",
       });
     }
 

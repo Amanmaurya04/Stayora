@@ -4,8 +4,8 @@ import { useAuth } from "../context/authContext"
 import "../css/navbar.css";
 
 export default function Navbar({ onSearch = () => { } }) {
- const { user, logout } = useAuth();
-    const [ city, setCity] = useState("");
+  const { user, logout } = useAuth();
+  const [city, setCity] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
@@ -29,16 +29,16 @@ export default function Navbar({ onSearch = () => { } }) {
 
   useEffect(() => {
 
-const handleDown = (e) => {
-        const clickedInsideSearch =
-            barRef.current?.contains(e.target);
+    const handleDown = (e) => {
+      const clickedInsideSearch =
+        barRef.current?.contains(e.target);
 
-        const clickedInsideMenu =
-            menuRef.current?.contains(e.target);
+      const clickedInsideMenu =
+        menuRef.current?.contains(e.target);
 
-        if (!clickedInsideSearch && !clickedInsideMenu) {
-            setActive(null);
-        }
+      if (!clickedInsideSearch && !clickedInsideMenu) {
+        setActive(null);
+      }
     };
 
     const handleKey = (e) => {
@@ -163,10 +163,7 @@ const handleDown = (e) => {
 
               <div className="logo-wrapper">
 
-                <Link
-                  className="title text-decoration-none"
-                  to="/listings"
-                >
+                <Link to="/" className="title text-decoration-none">
                   Stayora
                 </Link>
 
@@ -293,6 +290,9 @@ const handleDown = (e) => {
                     </span>
 
                   </button>
+
+
+
 
 
                   {active === "price" && (
@@ -603,69 +603,108 @@ const handleDown = (e) => {
 
               <div className="right-navbar">
 
-{isListingPage && (  <Link
+                {isListingPage && (<Link
                   to="/host-home"
                   className="host-link"
                 >
                   Stayora your home
-                </Link>   ) }
+                </Link>)}
 
-{isExperiencePage && (  <Link
+                {isExperiencePage && (<Link
                   to="/host-experience"
                   className="host-link"
                 >
                   Host an Experience
-                </Link>   ) }
-
-<div
-    ref={menuRef}
-    className="profile-menu-container"
->
-                <div type="button"
-                  className="profile-menu-btn"
-                  aria-label="Open menu">
+                </Link>)}
 
 
-                  <button className="right-butns" onClick={() => setActive(active === "menu" ? null : "menu")}>
-
-                    <i className="fa-solid fa-bars"></i>
-
-                  </button>
-
-                  <button className="right-butns" onClick={() => setActive(active === "profile" ? null : "profile")} >
-
-                    <i className="fa-solid fa-user"></i>
-
-                  </button>
-
-                </div>
-
-                {active === "menu" && (
-                  <div className="menu-dropdown">
+                <div
+                  ref={menuRef}
+                  className="profile-menu-container"
+                >
+                  <div className="profile-menu-btn">
 
 
                     <button
                       type="button"
-                      onClick={() => {
-                        console.log("LOGOUT CLICKED");
-                        handleLogout();
-                      }}
-                      className="logout-btn p-1"
+                      className="right-butns"
+                      aria-label="Open menu"
+                      onClick={() =>
+                        setActive(active === "menu" ? null : "menu")
+                      }
                     >
-                      Logout
+                      <i className="fa-solid fa-bars"></i>
                     </button>
 
 
+                    {user && (
+                      <button
+                        type="button"
+                        className="right-butns"
+                        aria-label="Open profile"
+                        onClick={() =>
+                          setActive(active === "profile" ? null : "profile")
+                        }
+                      >
+                        <i className="fa-solid fa-user"></i>
+                      </button>
+                    )}
+
                   </div>
 
-                )} 
 
-{active === "profile" && (
-  <div className="profile-dropdown">
-    <button className="profile-btn p-1" onClick={() => navigate("/user")}>Profile</button>
-  </div>
-)}
+                  {active === "menu" && (
+                    <div className="menu-dropdown">
 
+                      {user ? (
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="logout-btn p-1"
+                        >
+                          Logout
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActive(null);
+                              navigate("/login");
+                            }}
+                            className="logout-btn p-1"
+                          >
+                            Login
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActive(null);
+                              navigate("/signup");
+                            }}
+                            className="logout-btn p-1"
+                          >
+                            Sign up
+                          </button>
+                        </>
+                      )}
+
+                    </div>
+                  )}
+
+
+                  {active === "profile" && user && (
+                    <div className="profile-dropdown">
+                      <button
+                        type="button"
+                        className="profile-btn p-1"
+                        onClick={() => navigate("/user")}
+                      >
+                        Profile
+                      </button>
+                    </div>
+                  )}
 
                 </div>
 
